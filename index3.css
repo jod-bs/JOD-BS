@@ -1,0 +1,130 @@
+/* ==========================================================================
+   INDEX3 — page-specific styles for index3.html ONLY.
+
+   index3.html duplicates index.html section-for-section, except its
+   "Ten disciplines" services gallery (#services) and the ticker strip right
+   after the hero, both taken from index-demo.html's markup/class names
+   (.index-demo-ticker / .index-demo-h-*) but recolored LIGHT here instead
+   of dark, per request — white background, black + blue text, not
+   index-demo.html's navy theme. index-demo.css itself is never linked on
+   this page (linking it would also pull in its body.index-demo-page rules
+   for .home-header/.container/etc. and change the rest of the page), so
+   nothing here can leak onto index-demo.html or index.html, and nothing
+   there can leak onto this file.
+
+   Every rule below is scoped behind "body.index3-page" so this file only
+   ever applies on index3.html. Color/shadow/easing tokens (--home-accent,
+   --home-blue, --home-check-gradient, --home-shadow-*, --home-ease, the
+   Sora/Inter font stacks, etc.) are inherited from style.css's .home-page
+   scope rather than redefined here.
+   ========================================================================== */
+
+/* style.css sets ".home-page main{overflow:hidden}" site-wide. That breaks
+   position:sticky for the pinned gallery below (a non-visible overflow on
+   an ancestor stops position:sticky from sticking to the viewport) —
+   index-demo.css hits the same trap and fixes it the same way, scoped to
+   its own page; do the same here, scoped to index3-page only. */
+body.index3-page main{overflow:visible}
+
+/* ---- Ticker strip (markup/copy unchanged from index-demo.html — blue
+   gradient, white text). The skewY() tilt visually pokes past the
+   element's own (unrotated) layout box on one side without that being
+   reflected in document flow, which was overlapping/hiding the About
+   section heading right below it — margin-bottom below gives it enough
+   real clearance to land clear of that tilt at any width we support. ---- */
+body.index3-page .index-demo-ticker{position:relative;background:linear-gradient(100deg,var(--home-blue),var(--home-blue-bright) 60%,var(--home-accent));padding:16px 0;overflow:hidden;transform:skewY(-1.4deg);margin-bottom:56px;z-index:3}
+body.index3-page .index-demo-ticker-track{display:flex;width:max-content;transform:skewY(1.4deg);animation:index3Ticker 26s linear infinite}
+body.index3-page .index-demo-ticker-track:hover{animation-play-state:paused}
+body.index3-page .index-demo-ticker-item{display:flex;align-items:center;gap:14px;padding:0 28px;font-family:var(--font-head);font-weight:700;font-size:1rem;color:#fff;letter-spacing:.02em;white-space:nowrap}
+body.index3-page .index-demo-ticker-item svg{width:16px;height:16px;opacity:.85;flex-shrink:0}
+@keyframes index3Ticker{from{transform:skewY(1.4deg) translateX(0)}to{transform:skewY(1.4deg) translateX(-50%)}}
+@media (max-width:640px){
+  body.index3-page .index-demo-ticker{margin-bottom:32px}
+  body.index3-page .index-demo-ticker-item{font-size:.85rem;padding:0 18px}
+}
+
+/* ---- Services section shell — light background (demo used dark navy) ---- */
+body.index3-page .index3-services{position:relative;background:var(--home-bg);padding:clamp(70px,4vw,130px) 0 0}
+body.index3-page .index3-services-head{max-width:760px;margin:0 auto 50px;text-align:center}
+
+/* ---- Horizontal pinned gallery mechanics (ported from index-demo.js/css,
+   driven by index3.js on this page), recolored light ---- */
+body.index3-page .index-demo-h-pin{position:relative}
+body.index3-page .index-demo-h-sticky{position:relative;height:auto;overflow:visible;display:block}
+body.index3-page .index-demo-h-track{display:flex;align-items:stretch;gap:clamp(18px,2.4vw,32px);padding:4px 6vw 26px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+body.index3-page .index-demo-h-track::-webkit-scrollbar{display:none}
+body.index3-page .index-demo-h-slide{flex-shrink:0;display:flex;scroll-snap-align:start}
+body.index3-page .index-demo-h-progress{display:none}
+
+body.index3-page .index-demo-h-pin--active{height:640vh}
+/* top:0 here would stick the card/heading UNDER the fixed .home-header
+   (it's position:fixed at z-index:200, --home-header-h tall) instead of
+   below it — offset by the header height so the sticky content clears it. */
+body.index3-page .index-demo-h-pin--active .index-demo-h-sticky{position:sticky;top:var(--home-header-h);height:calc(100svh - var(--home-header-h));overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+body.index3-page .index-demo-h-pin--active .index-demo-h-track{overflow-x:visible;scroll-snap-type:none;padding:0 8vw;width:max-content;will-change:transform}
+body.index3-page .index-demo-h-pin--active .index-demo-h-progress{display:block}
+
+body.index3-page .index-demo-h-intro{width:min(60vw,480px);flex-direction:column;justify-content:center;color:var(--home-ink)}
+body.index3-page .index-demo-h-intro-eyebrow{display:block;font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--home-blue-bright);margin-bottom:18px}
+body.index3-page .index-demo-h-intro h2{font-family:var(--font-head);font-weight:800;font-size:clamp(1.9rem,3.6vw,3rem);line-height:1.14;color:var(--home-ink);margin-bottom:18px}
+body.index3-page .index-demo-h-intro p{color:var(--home-muted);font-size:1rem;line-height:1.7;max-width:38ch}
+body.index3-page .index-demo-h-intro-hint{display:inline-flex;align-items:center;gap:8px;margin-top:30px;font-size:.78rem;font-weight:700;color:var(--home-blue)}
+body.index3-page .index-demo-h-intro-hint svg{width:22px;height:22px;animation:index3NudgeX 1.6s ease-in-out infinite}
+@keyframes index3NudgeX{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+
+body.index3-page .index-demo-h-card{width:min(78vw,380px);flex-direction:column;background:#fff;border:1px solid var(--home-border);border-radius:28px;padding:26px;position:relative;overflow:hidden;color:var(--home-ink);box-shadow:var(--home-shadow-sm);transition:box-shadow .3s var(--home-ease),transform .3s var(--home-ease)}
+body.index3-page .index-demo-h-card:hover{box-shadow:var(--home-shadow-md);transform:translateY(-4px)}
+body.index3-page .index-demo-h-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+body.index3-page .index-demo-h-card-index{font-family:var(--font-head);font-weight:800;font-size:.78rem;letter-spacing:.08em;color:var(--home-faint)}
+body.index3-page .index-demo-h-card-ic{width:46px;height:46px;border-radius:14px;background:var(--home-check-gradient);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+body.index3-page .index-demo-h-card-ic svg{width:22px;height:22px}
+body.index3-page .index-demo-h-card-media{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:16/10;margin-bottom:18px;background:var(--home-bg)}
+body.index3-page .index-demo-h-card-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s var(--home-ease)}
+body.index3-page .index-demo-h-card:hover .index-demo-h-card-media img{transform:scale(1.08)}
+body.index3-page .index-demo-h-card-media-icon{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(47,143,239,.1),rgba(68,87,230,.06))}
+body.index3-page .index-demo-h-card-media-icon svg{width:32%;height:32%;color:var(--home-blue-bright);opacity:.9;transition:transform .6s var(--home-ease)}
+body.index3-page .index-demo-h-card:hover .index-demo-h-card-media-icon svg{transform:scale(1.12)}
+body.index3-page .index-demo-h-card h3{font-family:var(--font-head);font-weight:700;font-size:1.14rem;line-height:1.32;color:var(--home-ink);margin-bottom:10px}
+body.index3-page .index-demo-h-card p{font-size:.86rem;line-height:1.6;color:var(--home-muted);flex-grow:1}
+body.index3-page .index-demo-h-card-stats{display:flex;gap:18px;margin:18px 0}
+body.index3-page .index-demo-h-card-stats div{display:flex;flex-direction:column}
+body.index3-page .index-demo-h-card-stats strong{font-family:var(--font-head);font-weight:800;font-size:1.02rem;color:var(--home-blue-bright)}
+body.index3-page .index-demo-h-card-stats span{font-size:.66rem;color:var(--home-faint);text-transform:uppercase;letter-spacing:.05em}
+body.index3-page .index-demo-h-card-link{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:.86rem;color:var(--home-blue);padding-top:14px;border-top:1px solid var(--home-border)}
+body.index3-page .index-demo-h-card-link svg{width:16px;height:16px;transition:transform .3s var(--home-ease)}
+body.index3-page .index-demo-h-card:hover .index-demo-h-card-link svg{transform:translateX(4px)}
+body.index3-page .index-demo-h-card::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(140% 60% at 100% 0%,rgba(47,143,239,.08),transparent 60%);pointer-events:none}
+
+body.index3-page .index-demo-h-progress{position:relative;height:3px;margin:0 8vw clamp(60px,9vw,100px);background:var(--home-border);border-radius:3px;overflow:hidden}
+body.index3-page .index-demo-h-progress-fill{position:absolute;inset:0;width:100%;transform:scaleX(0);transform-origin:0 50%;background:linear-gradient(90deg,var(--home-blue),var(--home-blue-bright));border-radius:3px}
+
+@media (max-width:900px){
+  body.index3-page .index-demo-h-intro{width:82vw}
+  body.index3-page .index-demo-h-card{width:80vw}
+}
+
+/* ---- Rotate-in reveal for the "full blue box" elements (.home-launch-box,
+   .home-journey-box) — same idea as index-demo.css's .index-demo-scale-in
+   (scale+rotate settling into place as it scrolls into view), ported here
+   under its own name/easing var so it only ever runs on this page. ---- */
+body.index3-page{--index3-ease-spring:cubic-bezier(.34,1.56,.64,1)}
+body.index3-page .index3-rotate-in{opacity:0;transform:scale(.92) rotate(-3deg);transition:opacity .8s var(--index3-ease-spring),transform .8s var(--index3-ease-spring)}
+body.index3-page .index3-rotate-in.index3-in{opacity:1;transform:none}
+
+/* ---- Approach/journey section — two soft blurred glows drifting at
+   different speeds via [data-index3-speed] (index3.js), for a subtle
+   parallax background instead of the plain flat gradient. ---- */
+body.index3-page .home-journey .container{position:relative;z-index:1}
+body.index3-page .index3-journey-glow{position:absolute;border-radius:50%;filter:blur(70px);pointer-events:none;z-index:0;opacity:.5;will-change:transform}
+body.index3-page .index3-journey-glow-a{width:380px;height:380px;top:-90px;left:-70px;background:radial-gradient(circle,var(--home-accent),transparent 70%)}
+body.index3-page .index3-journey-glow-b{width:440px;height:440px;bottom:-140px;right:-90px;background:radial-gradient(circle,var(--home-blue-bright),transparent 70%)}
+@media (max-width:640px){
+  body.index3-page .index3-journey-glow{opacity:.32}
+}
+
+@media (prefers-reduced-motion: reduce){
+  body.index3-page [data-demo-h-track]{transform:none!important}
+  body.index3-page .index-demo-ticker-track{animation:none}
+  body.index3-page .index3-rotate-in{opacity:1!important;transform:none!important}
+  body.index3-page [data-index3-speed]{transform:none!important}
+}

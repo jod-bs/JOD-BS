@@ -1,0 +1,22 @@
+User-agent: *
+Allow: /
+
+# Sandbox / draft build pages -- not part of the live site, never linked
+# from navigation, kept out of crawling as a safety net.
+Disallow: /index-demo.html
+Disallow: /index3.html
+
+# Post-conversion and error pages -- meant to be reached only through the
+# real form/redirect flow, not landed on directly from search.
+Disallow: /thank-you.html
+Disallow: /404.html
+
+# Backend scripts, configs, and libraries
+Disallow: /mail-handler.php
+Disallow: /smtp-config.php
+Disallow: /vendor/
+Disallow: /blog/wp-admin/
+Disallow: /blog/wp-login.php
+Disallow: /blog/xmlrpc.php
+
+Sitemap: https://jodbs.com/sitemap.xml

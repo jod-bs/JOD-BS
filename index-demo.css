@@ -1,0 +1,403 @@
+/* ==========================================================================
+   INDEX-DEMO — isolated experimental parallax build of the homepage.
+
+   Scope: every rule in this file is either namespaced under the
+   ".index-demo-*" prefix or scoped behind "body.index-demo-page" so it can
+   only ever apply on index-demo.html. This file is linked ONLY from
+   index-demo.html — index.html and every other page keep loading style.css
+   alone and are completely unaffected by anything below.
+
+   Reuses (by design, not by accident): the shared "container", ".home-btn"
+   spacing rhythm is NOT reused (new ".index-demo-btn*" instead per the brief),
+   but color/shadow/easing tokens already defined on ".home-page" in
+   style.css (--home-accent, --home-blue, --home-shadow-lg, --home-ease, the
+   Sora/Inter font stacks, --home-header-h, etc.) are inherited straight from
+   the body element and reused here rather than redefined, so the demo page
+   stays visually in-family with the rest of the site.
+   ========================================================================== */
+
+body.index-demo-page{
+  --demo-navy-deep:#060924;
+  --demo-navy:#0c1142;
+  --demo-navy-2:#161c5e;
+  --demo-navy-soft:#1f2a72;
+  --demo-glow:rgba(47,143,239,.35);
+  --demo-glow-soft:rgba(142,201,255,.25);
+  --demo-glass:rgba(255,255,255,.06);
+  --demo-glass-2:rgba(255,255,255,.1);
+  --demo-glass-border:rgba(255,255,255,.14);
+  --demo-ease-spring:cubic-bezier(.34,1.56,.64,1);
+  --demo-card-r:22px;
+  background:var(--home-bg);
+  /* NOTE: deliberately no overflow-x here. Any non-"visible" overflow value
+     on <body> makes it establish its own scroll container, which breaks
+     position:sticky/fixed (they stick to the nearest scrolling ancestor —
+     now body instead of the viewport) and desyncs window.scrollY from what
+     is visually on screen. Each section that bleeds decorative elements
+     (hero, ticker, about, services, cta) already clips itself locally. */
+}
+body.index-demo-page main{overflow:visible}
+body.index-demo-page .container{max-width:1360px}
+
+/* Force the shared header into its frosted "scrolled" look at all times on
+   this page — the hero below is dark, and .home-nav-link text is always
+   var(--home-ink) (dark), so a transparent header would be unreadable for
+   the first ~30px of scroll. This only touches .home-header while it is a
+   descendant of body.index-demo-page, so index.html's header is untouched. */
+body.index-demo-page .home-header{
+  background:rgba(255,255,255,.86);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 6px 30px rgba(16,20,74,.08);border-bottom:1px solid var(--home-border);padding:12px 0;
+}
+
+/* ==========================================================================
+   Utility: reveal / split-text / parallax primitives driven by index-demo.js
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce){
+  body.index-demo-page *{scroll-behavior:auto!important}
+  body.index-demo-page [data-demo-speed],
+  body.index-demo-page [data-demo-h-track]{transform:none!important}
+  body.index-demo-page .index-demo-split-word{transform:none!important;opacity:1!important}
+  body.index-demo-page .index-demo-fade,
+  body.index-demo-page .index-demo-fade-left,
+  body.index-demo-page .index-demo-fade-right,
+  body.index-demo-page .index-demo-scale-in{opacity:1!important;transform:none!important}
+}
+
+body.index-demo-page .index-demo-split-mask{display:inline-block;overflow:hidden;vertical-align:top}
+body.index-demo-page .index-demo-split-word{display:inline-block;transform:translateY(115%);opacity:0;transition:transform .78s var(--demo-ease-spring),opacity .6s var(--home-ease-out)}
+body.index-demo-page .index-demo-split-in .index-demo-split-word{transform:translateY(0);opacity:1}
+
+body.index-demo-page .index-demo-fade{opacity:0;transform:translateY(26px) scale(.98);transition:opacity .9s var(--home-ease-out),transform .9s var(--home-ease-out)}
+body.index-demo-page .index-demo-fade.index-demo-in{opacity:1;transform:none}
+body.index-demo-page .index-demo-fade-left{opacity:0;transform:translateX(-48px);transition:opacity .9s var(--home-ease-out),transform .9s var(--home-ease-out)}
+body.index-demo-page .index-demo-fade-left.index-demo-in{opacity:1;transform:none}
+body.index-demo-page .index-demo-fade-right{opacity:0;transform:translateX(48px);transition:opacity .9s var(--home-ease-out),transform .9s var(--home-ease-out)}
+body.index-demo-page .index-demo-fade-right.index-demo-in{opacity:1;transform:none}
+body.index-demo-page .index-demo-scale-in{opacity:0;transform:scale(.82) rotate(-3deg);transition:opacity .8s var(--demo-ease-spring),transform .8s var(--demo-ease-spring)}
+body.index-demo-page .index-demo-scale-in.index-demo-in{opacity:1;transform:none}
+body.index-demo-page [data-demo-delay="1"]{transition-delay:.09s}
+body.index-demo-page [data-demo-delay="2"]{transition-delay:.18s}
+body.index-demo-page [data-demo-delay="3"]{transition-delay:.27s}
+body.index-demo-page [data-demo-delay="4"]{transition-delay:.36s}
+body.index-demo-page [data-demo-delay="5"]{transition-delay:.45s}
+body.index-demo-page [data-demo-delay="6"]{transition-delay:.54s}
+
+body.index-demo-page [data-demo-speed]{will-change:transform}
+
+@media (max-width:768px){
+  body.index-demo-page .index-demo-fade,
+  body.index-demo-page .index-demo-fade-left,
+  body.index-demo-page .index-demo-fade-right,
+  body.index-demo-page .index-demo-scale-in{transition-duration:.6s}
+}
+
+/* ==========================================================================
+   Progress bar + cursor glow
+   ========================================================================== */
+.index-demo-progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:400;background:rgba(16,20,74,.06);pointer-events:none}
+.index-demo-progress-bar{height:100%;width:100%;transform:scaleX(0);transform-origin:0 50%;background:linear-gradient(90deg,var(--home-blue-bright),var(--home-accent),var(--home-accent-2));box-shadow:0 0 12px var(--demo-glow)}
+
+.index-demo-cursor-glow{position:fixed;top:0;left:0;width:440px;height:440px;margin:-220px 0 0 -220px;border-radius:50%;pointer-events:none;z-index:6;background:radial-gradient(circle,rgba(47,143,239,.16),rgba(142,201,255,.05) 55%,transparent 72%);opacity:0;transition:opacity .4s ease;will-change:transform;mix-blend-mode:plus-lighter}
+.index-demo-cursor-glow.index-demo-visible{opacity:1}
+@media (hover:none),(max-width:900px){.index-demo-cursor-glow{display:none}}
+
+/* ==========================================================================
+   Section dividers (curved SVG seams between differently-toned sections)
+   ========================================================================== */
+.index-demo-divider{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:clamp(48px,8vw,120px);line-height:0;z-index:2;pointer-events:none}
+.index-demo-divider svg{width:100%;height:100%;display:block}
+.index-demo-divider-top{bottom:auto;top:-1px;transform:scaleY(-1)}
+
+/* ==========================================================================
+   HERO
+   ========================================================================== */
+.index-demo-hero{position:relative;min-height:100svh;display:flex;align-items:center;overflow:hidden;isolation:isolate;background:radial-gradient(120% 90% at 15% -10%,var(--demo-navy-soft),transparent 55%),radial-gradient(90% 70% at 100% 110%,var(--demo-navy-2),transparent 60%),var(--demo-navy-deep);padding:calc(var(--home-header-h) + 56px) 0 120px}
+.index-demo-hero-aurora{position:absolute;inset:-20%;z-index:0;background:conic-gradient(from 0deg at 50% 50%,rgba(47,143,239,.16),rgba(142,201,255,.08),rgba(68,87,230,.14),rgba(47,143,239,.16));animation:idmSpinSlow 34s linear infinite;opacity:.55;filter:blur(40px)}
+.index-demo-hero-grid{position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:64px 64px;-webkit-mask-image:radial-gradient(80% 70% at 50% 30%,#000,transparent 85%);mask-image:radial-gradient(80% 70% at 50% 30%,#000,transparent 85%)}
+.index-demo-hero-noise{position:absolute;inset:0;z-index:0;opacity:.4;mix-blend-mode:overlay;pointer-events:none}
+.index-demo-orb{position:absolute;border-radius:50%;filter:blur(2px);z-index:0}
+.index-demo-orb-inner{width:100%;height:100%;border-radius:50%;animation:idmFloatY 9s ease-in-out infinite}
+.index-demo-orb-a{width:340px;height:340px;top:6%;left:-6%;background:radial-gradient(circle at 35% 35%,var(--demo-glow),transparent 70%)}
+.index-demo-orb-b{width:260px;height:260px;bottom:2%;right:2%;background:radial-gradient(circle at 40% 40%,var(--demo-glow-soft),transparent 70%)}
+.index-demo-orb-c{width:160px;height:160px;top:44%;left:46%;background:radial-gradient(circle at 40% 40%,rgba(255,255,255,.14),transparent 70%)}
+.index-demo-orb-b .index-demo-orb-inner{animation-duration:12s;animation-delay:-3s}
+.index-demo-orb-c .index-demo-orb-inner{animation-duration:7s;animation-delay:-1.4s}
+
+.index-demo-hero-inner{position:relative;z-index:2;display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(30px,5vw,70px);align-items:center}
+.index-demo-eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#dce6ff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);padding:9px 18px;border-radius:999px;margin-bottom:26px;backdrop-filter:blur(6px)}
+.index-demo-eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--home-accent-2);box-shadow:0 0 0 4px rgba(142,201,255,.25);flex-shrink:0}
+
+/* body.index-demo-page prefix bumps specificity above the sitewide
+   ".home-page h1,h2,h3,h4{color:var(--home-ink)}" rule (style.css), which
+   otherwise wins over a same-or-lower-specificity color here regardless of
+   source order. Every heading color rule on a dark demo section needs this
+   same treatment — see also .index-demo-h-intro h2 and .index-demo-cta-card
+   h2 below. */
+body.index-demo-page .index-demo-hero-title{font-family:var(--font-head);font-weight:800;letter-spacing:-.02em;line-height:1.08;font-size:clamp(2.3rem,5vw,4.1rem);color:#fff;margin-bottom:26px}
+
+/* Reusable gradient-text utility (dark-bg flavor) — used on the hero title
+   and any other heading on a dark demo section. Headings on light demo
+   sections use .index-demo-accent-blue instead (solid brand blue, no
+   gradient-on-dark assumption). */
+body.index-demo-page .index-demo-accent{background:linear-gradient(100deg,var(--home-accent-2),var(--home-accent) 55%,#fff 115%);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:220% auto;animation:homeGradientShift 7s ease-in-out infinite}
+body.index-demo-page .index-demo-accent-blue{background:linear-gradient(100deg,var(--home-blue),var(--home-blue-bright) 55%,var(--home-accent) 115%);-webkit-background-clip:text;background-clip:text;color:transparent;background-size:220% auto;animation:homeGradientShift 7s ease-in-out infinite}
+
+body.index-demo-page .index-demo-hero-lead{font-size:clamp(1.02rem,1.6vw,1.2rem);line-height:1.7;color:rgba(226,231,255,.82);max-width:56ch;margin-bottom:36px}
+
+.index-demo-btn-row{display:flex;flex-wrap:wrap;gap:16px}
+.index-demo-hero-cta{margin-bottom:46px}
+.index-demo-about-cta{margin-top:30px}
+.index-demo-btn{display:inline-flex;align-items:center;gap:10px;padding:16px 30px;border-radius:999px;font-family:var(--font-head);font-weight:700;font-size:.96rem;letter-spacing:.01em;transition:transform .35s var(--demo-ease-spring),box-shadow .35s var(--home-ease),background .35s var(--home-ease);white-space:nowrap}
+.index-demo-btn svg{width:18px;height:18px;transition:transform .3s var(--home-ease)}
+.index-demo-btn:hover svg{transform:translateX(4px)}
+.index-demo-btn-primary{background:linear-gradient(120deg,var(--home-blue-bright),var(--home-accent));color:#fff;box-shadow:0 16px 40px rgba(47,143,239,.35)}
+.index-demo-btn-primary:hover{transform:translateY(-3px);box-shadow:0 22px 50px rgba(47,143,239,.46)}
+.index-demo-btn-ghost{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.24)}
+.index-demo-btn-ghost:hover{background:rgba(255,255,255,.14);transform:translateY(-3px)}
+.index-demo-btn-dark{background:var(--demo-navy);color:#fff;box-shadow:0 16px 34px rgba(6,9,36,.28)}
+.index-demo-btn-dark:hover{transform:translateY(-3px);box-shadow:0 20px 44px rgba(6,9,36,.4)}
+
+.index-demo-hero-metrics{display:flex;gap:clamp(20px,4vw,44px);flex-wrap:wrap}
+.index-demo-hero-metrics div{display:flex;flex-direction:column}
+.index-demo-hero-metrics strong{font-family:var(--font-head);font-size:clamp(1.5rem,2.4vw,2rem);color:#fff;font-weight:800}
+.index-demo-hero-metrics span{font-size:.76rem;color:rgba(226,231,255,.6);letter-spacing:.03em;margin-top:2px}
+
+/* Hero visual: glass dashboard hub + orbiting chips + floating cards */
+/* width:100% is deliberate, not decorative: every child in here is
+   position:absolute (no in-flow content), so the box has zero intrinsic
+   size and grid's default stretch alignment collapses it to 0 width
+   instead of filling its column — same story for .index-demo-hub below. */
+.index-demo-hero-visual{position:relative;width:100%;height:clamp(360px,42vw,520px)}
+.index-demo-hub{position:absolute;inset:6% 12%;border-radius:28px;background:linear-gradient(160deg,rgba(255,255,255,.1),rgba(255,255,255,.02));border:1px solid var(--demo-glass-border);backdrop-filter:blur(14px);box-shadow:0 30px 70px rgba(3,6,26,.5);display:flex;flex-direction:column;justify-content:center;align-items:center;gap:16px;overflow:hidden}
+.index-demo-hub::before{content:"";position:absolute;inset:0;background:radial-gradient(60% 60% at 50% 20%,rgba(47,143,239,.22),transparent 70%)}
+.index-demo-hub-ring{position:relative;width:64%;aspect-ratio:1;border-radius:50%;border:1px dashed rgba(255,255,255,.22)}
+.index-demo-hub-ring::before,.index-demo-hub-ring::after{content:"";position:absolute;inset:14%;border-radius:50%;border:1px solid rgba(255,255,255,.14)}
+.index-demo-hub-core{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30%;aspect-ratio:1;border-radius:50%;background:linear-gradient(135deg,var(--home-blue-bright),var(--home-accent));display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 0 0 10px rgba(47,143,239,.14),0 20px 40px rgba(47,143,239,.35);animation:idmPulseGlow 3.6s ease-in-out infinite}
+.index-demo-hub-core svg{width:34%;height:34%}
+.index-demo-hub-chip{position:absolute;width:15%;aspect-ratio:1;border-radius:12px;background:rgba(255,255,255,.92);color:var(--home-blue);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 24px rgba(3,6,26,.35);animation:idmChipSpin var(--idm-orbit-dur,16s) ease-in-out infinite}
+.index-demo-hub-chip svg{width:52%;height:52%}
+.index-demo-hub-chip-1{top:6%;left:44%;--idm-orbit-dur:5.5s}
+.index-demo-hub-chip-2{top:44%;left:4%;--idm-orbit-dur:6.5s;animation-delay:-1.5s}
+.index-demo-hub-chip-3{bottom:6%;left:44%;--idm-orbit-dur:6s;animation-delay:-3s}
+.index-demo-hub-chip-4{top:44%;right:4%;--idm-orbit-dur:7s;animation-delay:-2.2s}
+
+.index-demo-float-wrap{position:absolute;z-index:3}
+.index-demo-float{background:rgba(255,255,255,.96);border-radius:16px;box-shadow:0 18px 40px rgba(3,6,26,.28);padding:14px 18px;display:flex;flex-direction:column;gap:4px;animation:idmFloatY 6s ease-in-out infinite}
+.index-demo-float-wrap-perf{top:0;left:-6%}
+.index-demo-float-perf strong{font-family:var(--font-head);font-size:1.15rem;color:var(--home-ink)}
+.index-demo-float-perf strong em{font-style:normal;color:#1fae63;font-size:.72rem;margin-left:6px;font-weight:700}
+.index-demo-float-perf span{font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--home-muted)}
+.index-demo-float-wrap-badge{bottom:10%;right:-4%}
+.index-demo-float-badge{flex-direction:row;align-items:center;gap:8px;padding:10px 16px;animation-delay:-2s}
+.index-demo-float-badge svg{width:16px;height:16px;color:#1fae63}
+.index-demo-float-badge span{font-size:.78rem;font-weight:700;color:var(--home-ink)}
+.index-demo-float-wrap-ai{bottom:-6%;left:6%;max-width:230px}
+.index-demo-float-ai{background:var(--demo-navy);color:#fff;flex-direction:row;align-items:center;gap:10px;animation-delay:-3.6s}
+.index-demo-float-ai i{width:9px;height:9px;border-radius:50%;background:#5be08a;box-shadow:0 0 0 4px rgba(91,224,138,.22);flex-shrink:0;animation:idmPulseGlow 2s ease-in-out infinite}
+.index-demo-float-ai div{display:flex;flex-direction:column;gap:2px}
+.index-demo-float-ai strong{font-size:.8rem}
+.index-demo-float-ai small{font-size:.7rem;color:rgba(255,255,255,.65)}
+
+.index-demo-scroll-cue{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;z-index:2;color:rgba(255,255,255,.7);transition:opacity .3s linear}
+.index-demo-scroll-cue span{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase}
+.index-demo-scroll-cue i{width:1px;height:34px;background:linear-gradient(rgba(255,255,255,.7),transparent);position:relative;overflow:hidden}
+.index-demo-scroll-cue i::after{content:"";position:absolute;left:0;top:-100%;width:100%;height:100%;background:#fff;animation:idmScrollDot 1.8s ease-in-out infinite}
+
+@media (max-width:1020px){
+  .index-demo-hero-inner{grid-template-columns:1fr}
+  .index-demo-hero-visual{max-width:460px;margin:0 auto;height:clamp(320px,80vw,420px)}
+}
+@media (max-width:640px){
+  .index-demo-hero{padding-top:calc(var(--home-header-h) + 30px)}
+  .index-demo-float{padding:10px 14px}
+  .index-demo-float-wrap-perf{left:0}
+  .index-demo-float-wrap-badge{right:0}
+  .index-demo-float-wrap-ai{left:0;max-width:190px}
+  .index-demo-hero-metrics{gap:22px}
+}
+
+/* ==========================================================================
+   TICKER — ambient infinite marquee bridging hero into the page body
+   ========================================================================== */
+.index-demo-ticker{position:relative;background:linear-gradient(100deg,var(--home-blue),var(--home-blue-bright) 60%,var(--home-accent));padding:16px 0;overflow:hidden;transform:skewY(-1.4deg);margin-top:-34px;z-index:3}
+.index-demo-ticker-track{display:flex;width:max-content;transform:skewY(1.4deg);animation:idmTicker 26s linear infinite}
+.index-demo-ticker-track:hover{animation-play-state:paused}
+.index-demo-ticker-item{display:flex;align-items:center;gap:14px;padding:0 28px;font-family:var(--font-head);font-weight:700;font-size:1rem;color:#fff;letter-spacing:.02em;white-space:nowrap}
+.index-demo-ticker-item svg{width:16px;height:16px;opacity:.85;flex-shrink:0}
+@media (max-width:640px){.index-demo-ticker-item{font-size:.85rem;padding:0 18px}}
+
+/* ==========================================================================
+   STATS
+   ========================================================================== */
+.index-demo-stats{position:relative;padding:clamp(70px,10vw,120px) 0 20px;background:var(--home-bg)}
+.index-demo-stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:46px}
+.index-demo-stat-card{background:#fff;border:1px solid var(--home-border);border-radius:var(--demo-card-r);padding:26px 20px;box-shadow:var(--home-shadow-sm);text-align:center;transition:transform .4s var(--home-ease),box-shadow .4s var(--home-ease)}
+.index-demo-stat-card:hover{transform:translateY(-6px);box-shadow:var(--home-shadow-md)}
+.index-demo-stat-num{display:block;font-family:var(--font-head);font-weight:800;font-size:clamp(1.7rem,3vw,2.3rem);background:var(--home-check-gradient);-webkit-background-clip:text;background-clip:text;color:transparent}
+.index-demo-stat-card span{display:block;margin-top:8px;font-size:.8rem;color:var(--home-muted);font-weight:600}
+.index-demo-badges-row{display:flex;flex-wrap:wrap;gap:14px;justify-content:center}
+.index-demo-badge{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:999px;background:#fff;border:1px solid var(--home-border);font-size:.8rem;font-weight:700;color:var(--home-ink);box-shadow:var(--home-shadow-sm)}
+.index-demo-badge svg{width:16px;height:16px;color:var(--home-accent)}
+@media (max-width:900px){.index-demo-stats-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){.index-demo-stats-grid{grid-template-columns:1fr}}
+
+/* ==========================================================================
+   ABOUT — sticky scrolly-telling split
+   ========================================================================== */
+.index-demo-about{position:relative;padding:clamp(90px,11vw,140px) 0;background:var(--home-bg);overflow:hidden}
+.index-demo-about-grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:clamp(30px,5vw,70px);align-items:start}
+.index-demo-about-visual{position:sticky;top:calc(var(--home-header-h) + 34px);align-self:start}
+.index-demo-about-frame{position:relative;border-radius:32px;overflow:hidden;box-shadow:var(--home-shadow-lg);aspect-ratio:4/5}
+.index-demo-about-frame img{width:100%;height:100%;object-fit:cover;display:block;transform:scale(1.02)}
+.index-demo-about-ring{position:absolute;inset:-26px;border:1px dashed rgba(47,143,239,.35);border-radius:40px;pointer-events:none;animation:idmSpinSlow 40s linear infinite}
+.index-demo-about-blob{position:absolute;width:210px;height:210px;border-radius:50%;background:radial-gradient(circle,rgba(47,143,239,.28),transparent 70%);bottom:-60px;right:-60px;z-index:-1;filter:blur(6px)}
+.index-demo-about-chip{position:absolute;bottom:22px;left:22px;background:rgba(12,17,66,.85);color:#fff;backdrop-filter:blur(8px);border-radius:16px;padding:14px 18px;display:flex;flex-direction:column;gap:2px;box-shadow:0 16px 36px rgba(3,6,26,.35)}
+.index-demo-about-chip strong{font-family:var(--font-head);font-size:1.05rem}
+.index-demo-about-chip span{font-size:.7rem;color:rgba(255,255,255,.7);letter-spacing:.03em}
+
+.index-demo-about-text{display:flex;flex-direction:column;gap:clamp(60px,9vw,110px);padding-top:6px}
+.index-demo-about-block h2,.index-demo-about-block h3{font-family:var(--font-head);font-weight:800;letter-spacing:-.01em;color:var(--home-ink);margin-bottom:16px}
+.index-demo-about-block h2{font-size:clamp(1.9rem,3.4vw,2.5rem)}
+.index-demo-about-block h3{font-size:clamp(1.2rem,2vw,1.5rem)}
+.index-demo-about-block p{font-size:1.02rem;line-height:1.75;color:var(--home-muted)}
+.index-demo-about-block p+p{margin-top:14px}
+.index-demo-about-num{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;background:rgba(47,143,239,.1);color:var(--home-accent);font-family:var(--font-head);font-weight:800;font-size:.85rem;margin-bottom:16px}
+.index-demo-about-list{list-style:none;margin-top:18px;display:grid;gap:10px}
+.index-demo-about-list li{display:flex;align-items:flex-start;gap:10px;font-size:.94rem;color:var(--home-ink);font-weight:600}
+.index-demo-about-list li::before{content:"";width:20px;height:20px;border-radius:50%;background:var(--home-check-gradient);flex-shrink:0;margin-top:2px;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E") center/60% no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3'%3E%3Cpath d='M5 13l4 4L19 7'/%3E%3C/svg%3E") center/60% no-repeat}
+
+@media (max-width:900px){
+  .index-demo-about-grid{grid-template-columns:1fr}
+  .index-demo-about-visual{position:relative;top:0;max-width:400px;margin:0 auto 20px}
+  .index-demo-about-text{gap:52px}
+}
+
+/* ==========================================================================
+   SERVICES — horizontal pinned scroll gallery
+   ========================================================================== */
+.index-demo-services{position:relative;background:radial-gradient(90% 70% at 85% 0%,var(--demo-navy-soft),transparent 60%),var(--demo-navy-deep);padding:clamp(90px,11vw,130px) 0 0}
+.index-demo-services .index-demo-section-head{padding-bottom:clamp(50px,7vw,80px)}
+/* Base = safe default (progressive enhancement): a plain, native
+   horizontally-swipeable strip. index-demo.js upgrades this to a
+   scroll-jacked pinned gallery by adding "index-demo-h-pin--active" once it
+   confirms a wide viewport + no prefers-reduced-motion — so mobile, reduced
+   motion, and any JS failure all safely fall back to this base layout
+   instead of leaving a multi-screen empty pinned gap. */
+.index-demo-h-pin{position:relative}
+.index-demo-h-sticky{position:relative;height:auto;overflow:visible;display:block}
+.index-demo-h-track{display:flex;align-items:stretch;gap:clamp(18px,2.4vw,32px);padding:4px 6vw 26px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+.index-demo-h-track::-webkit-scrollbar{display:none}
+.index-demo-h-slide{flex-shrink:0;display:flex;scroll-snap-align:start}
+.index-demo-h-progress{display:none}
+
+.index-demo-h-pin--active{height:640vh}
+.index-demo-h-pin--active .index-demo-h-sticky{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;flex-direction:column;justify-content:center}
+.index-demo-h-pin--active .index-demo-h-track{overflow-x:visible;scroll-snap-type:none;padding:0 8vw;width:max-content;will-change:transform}
+.index-demo-h-pin--active .index-demo-h-progress{display:block}
+.index-demo-h-intro{width:min(60vw,480px);flex-direction:column;justify-content:center;color:#fff}
+.index-demo-h-intro-eyebrow{display:block;font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--home-accent-2);margin-bottom:18px}
+body.index-demo-page .index-demo-h-intro h2{font-family:var(--font-head);font-weight:800;font-size:clamp(1.9rem,3.6vw,3rem);line-height:1.14;color:#fff;margin-bottom:18px}
+.index-demo-h-intro p{color:rgba(226,231,255,.72);font-size:1rem;line-height:1.7;max-width:38ch}
+.index-demo-h-intro-hint{display:inline-flex;align-items:center;gap:8px;margin-top:30px;font-size:.78rem;font-weight:700;color:rgba(255,255,255,.6)}
+.index-demo-h-intro-hint svg{width:22px;height:22px;animation:idmNudgeX 1.6s ease-in-out infinite}
+
+.index-demo-h-card{width:min(78vw,380px);flex-direction:column;background:linear-gradient(165deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid var(--demo-glass-border);border-radius:28px;padding:26px;position:relative;overflow:hidden;color:#fff;backdrop-filter:blur(10px)}
+.index-demo-h-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.index-demo-h-card-index{font-family:var(--font-head);font-weight:800;font-size:.78rem;letter-spacing:.08em;color:rgba(255,255,255,.5)}
+.index-demo-h-card-ic{width:46px;height:46px;border-radius:14px;background:var(--home-check-gradient);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.index-demo-h-card-ic svg{width:22px;height:22px}
+.index-demo-h-card-media{position:relative;border-radius:18px;overflow:hidden;aspect-ratio:16/10;margin-bottom:18px;background:rgba(255,255,255,.06)}
+.index-demo-h-card-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .6s var(--home-ease)}
+.index-demo-h-card:hover .index-demo-h-card-media img{transform:scale(1.08)}
+.index-demo-h-card-media-icon{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(47,143,239,.28),rgba(68,87,230,.2))}
+.index-demo-h-card-media-icon svg{width:32%;height:32%;color:#fff;opacity:.9;transition:transform .6s var(--home-ease)}
+.index-demo-h-card:hover .index-demo-h-card-media-icon svg{transform:scale(1.12) rotate(-4deg)}
+body.index-demo-page .index-demo-h-card h3{font-family:var(--font-head);font-weight:700;font-size:1.14rem;line-height:1.32;color:#fff;margin-bottom:10px}
+.index-demo-h-card p{font-size:.86rem;line-height:1.6;color:rgba(226,231,255,.7);flex-grow:1}
+.index-demo-h-card-stats{display:flex;gap:18px;margin:18px 0}
+.index-demo-h-card-stats div{display:flex;flex-direction:column}
+.index-demo-h-card-stats strong{font-family:var(--font-head);font-weight:800;font-size:1.02rem;color:var(--home-accent-2)}
+.index-demo-h-card-stats span{font-size:.66rem;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.05em}
+.index-demo-h-card-link{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:.86rem;color:#fff;padding-top:14px;border-top:1px solid rgba(255,255,255,.12)}
+.index-demo-h-card-link svg{width:16px;height:16px;transition:transform .3s var(--home-ease)}
+.index-demo-h-card:hover .index-demo-h-card-link svg{transform:translateX(4px)}
+.index-demo-h-card::after{content:"";position:absolute;inset:0;border-radius:inherit;background:radial-gradient(140% 60% at 100% 0%,rgba(47,143,239,.16),transparent 60%);pointer-events:none}
+
+.index-demo-h-progress{position:relative;height:3px;margin:0 8vw clamp(60px,9vw,100px);background:rgba(255,255,255,.12);border-radius:3px;overflow:hidden}
+.index-demo-h-progress-fill{position:absolute;inset:0;width:100%;transform:scaleX(0);transform-origin:0 50%;background:linear-gradient(90deg,var(--home-blue-bright),var(--home-accent-2));border-radius:3px}
+
+@media (max-width:768px){
+  .index-demo-h-intro{width:82vw}
+  .index-demo-h-card{width:80vw}
+}
+
+/* ==========================================================================
+   JOURNEY — reuses #homeJourneyCard/#homeJourneyTrack markup + JS as-is,
+   restyled inside a new dark, pinned-feeling shell with an animated
+   scroll-drawn connector line.
+   ========================================================================== */
+.index-demo-journey{position:relative;background:linear-gradient(180deg,var(--demo-navy-deep),var(--demo-navy) 40%,var(--demo-navy-2));padding:clamp(90px,11vw,130px) 0}
+.index-demo-journey-path{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;opacity:.5;pointer-events:none}
+.index-demo-journey .index-demo-section-head{position:relative;z-index:1}
+.index-demo-journey .home-journey-box,
+.index-demo-journey .home-journey-track-wrap{position:relative;z-index:1}
+
+/* ==========================================================================
+   FAQ — reuses #homeFaqPills/#homeFaqList; new light shell + watermark
+   ========================================================================== */
+.index-demo-faq{position:relative;background:var(--home-bg);padding:clamp(90px,11vw,130px) 0;overflow:hidden}
+.index-demo-faq-mark{position:absolute;top:-6%;right:-4%;font-family:var(--font-head);font-weight:800;font-size:min(42vw,520px);line-height:1;color:rgba(47,143,239,.05);z-index:0;user-select:none}
+.index-demo-faq .container{position:relative;z-index:1}
+.index-demo-faq-heading{font-size:clamp(1.9rem,3.4vw,2.5rem);margin-bottom:14px}
+.index-demo-faq-lead{font-size:1.02rem;line-height:1.7;color:var(--home-muted);margin-bottom:26px;max-width:46ch}
+
+/* ==========================================================================
+   FINAL CTA
+   ========================================================================== */
+.index-demo-cta{position:relative;padding:clamp(90px,12vw,150px) 0;background:radial-gradient(90% 80% at 20% 0%,var(--demo-navy-soft),transparent 55%),radial-gradient(70% 60% at 90% 100%,rgba(47,143,239,.22),transparent 60%),var(--demo-navy-deep);overflow:hidden}
+.index-demo-cta-blob{position:absolute;border-radius:50%;filter:blur(50px);z-index:0}
+.index-demo-cta-blob-a{width:420px;height:420px;top:-10%;left:-8%;background:rgba(68,87,230,.35);animation:idmBlobMove 18s ease-in-out infinite}
+.index-demo-cta-blob-b{width:320px;height:320px;bottom:-14%;right:-6%;background:rgba(47,143,239,.28);animation:idmBlobMove 22s ease-in-out infinite reverse}
+.index-demo-cta-card{position:relative;z-index:1;border:1px solid var(--demo-glass-border);background:linear-gradient(165deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border-radius:36px;padding:clamp(36px,6vw,72px);display:grid;grid-template-columns:1.2fr .8fr;gap:40px;align-items:center;backdrop-filter:blur(12px)}
+body.index-demo-page .index-demo-cta-card h2{font-family:var(--font-head);font-weight:800;letter-spacing:-.02em;font-size:clamp(2rem,4vw,2.9rem);color:#fff;line-height:1.14;margin-bottom:18px}
+.index-demo-cta-card p{color:rgba(226,231,255,.78);font-size:1.02rem;line-height:1.7;max-width:48ch;margin-bottom:32px}
+.index-demo-cta-actions{display:flex;flex-wrap:wrap;gap:16px}
+.index-demo-cta-info{display:flex;flex-direction:column;gap:20px}
+.index-demo-cta-info-item{display:flex;align-items:flex-start;gap:14px}
+.index-demo-cta-info-ic{width:44px;height:44px;border-radius:13px;background:rgba(255,255,255,.08);border:1px solid var(--demo-glass-border);display:flex;align-items:center;justify-content:center;color:var(--home-accent-2);flex-shrink:0}
+.index-demo-cta-info-ic svg{width:20px;height:20px}
+.index-demo-cta-info-item strong{display:block;color:#fff;font-size:.92rem;font-weight:700;margin-bottom:2px}
+.index-demo-cta-info-item span,.index-demo-cta-info-item a{display:block;color:rgba(226,231,255,.68);font-size:.84rem;text-decoration:none}
+.index-demo-cta-info-item a:hover{color:#fff}
+@media (max-width:900px){.index-demo-cta-card{grid-template-columns:1fr}}
+
+/* ==========================================================================
+   Section head (shared small helper across the new sections)
+   ========================================================================== */
+.index-demo-eyebrow.index-demo-eyebrow-blue{color:var(--home-blue-2);background:rgba(57,73,171,.08);border-color:rgba(57,73,171,.16)}
+.index-demo-eyebrow.index-demo-eyebrow-blue::before{background:var(--home-accent)}
+
+.index-demo-section-head{max-width:760px;margin:0 auto 50px;text-align:center}
+.index-demo-section-head .index-demo-eyebrow{margin-bottom:18px}
+body.index-demo-page .index-demo-section-head h2{font-family:var(--font-head);font-weight:800;letter-spacing:-.01em;font-size:clamp(1.9rem,3.6vw,2.7rem);line-height:1.16;color:#fff;margin-bottom:14px}
+body.index-demo-page .index-demo-section-head.index-demo-head-light h2{color:var(--home-ink)}
+.index-demo-section-head p{font-size:1.02rem;line-height:1.7;color:rgba(226,231,255,.72)}
+.index-demo-section-head.index-demo-head-light p{color:var(--home-muted)}
+
+/* ==========================================================================
+   Keyframes
+   ========================================================================== */
+@keyframes idmSpinSlow{to{transform:rotate(360deg)}}
+@keyframes idmFloatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+@keyframes idmPulseGlow{0%,100%{box-shadow:0 0 0 0 rgba(47,143,239,.4)}50%{box-shadow:0 0 0 14px rgba(47,143,239,0)}}
+@keyframes idmTicker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes idmScrollDot{0%{top:-100%}50%{top:0}100%{top:100%}}
+@keyframes idmBlobMove{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(30px,-20px) scale(1.12)}}
+@keyframes idmNudgeX{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+
+@keyframes idmChipSpin{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.06)}}
+
+@media (max-width:768px){
+  .index-demo-hero-aurora,.index-demo-about-ring{animation-duration:60s}
+  .index-demo-hub-chip{animation:none}
+}

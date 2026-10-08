@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192x192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+<title>JOD Business Services — Parallax Experience (Demo)</title>
+<meta name="description" content="An experimental, full-page parallax redesign of the JOD Business Services homepage — for preview purposes only.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- style.css is the shared, untouched site stylesheet (same as index.html).
+     index-demo.css loads AFTER it and only ever applies on this page. -->
+<link rel="stylesheet" href="style.css?v=20260930-2">
+<link rel="stylesheet" href="index-demo.css?v=20260930-2">
+</head>
+<body class="home-page index-demo-page">
+
+<div class="index-demo-progress" aria-hidden="true"><span class="index-demo-progress-bar" id="demoProgressBar"></span></div>
+<div class="index-demo-cursor-glow" aria-hidden="true"></div>
+
+<!-- ================= HEADER (unchanged from index.html — same IDs/classes
+     so the shared header/nav/dropdown logic in script.js keeps working) ================= -->
+<header class="home-header" id="homeHeader">
+  <div class="container home-header-inner">
+
+    <a href="#demoHero" class="home-logo" aria-label="JOD Business Services — home">
+      <img src="images/black-logo.webp" alt="JOD Business Services" class="home-logo-img">
+    </a>
+
+    <nav class="home-nav" id="homeNav">
+      <a href="index.html" class="home-nav-link">Home</a>
+      <a href="about.html" class="home-nav-link">About Us</a>
+
+      <div class="home-nav-item" data-home-dropdown="services">
+        <button type="button" class="home-nav-link home-dd-toggle" aria-haspopup="true" aria-expanded="false">
+          Services
+          <svg class="home-dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="home-dropdown home-dropdown-services" role="menu" aria-label="Services">
+          <div class="home-dropdown-grid">
+            <a class="home-dropdown-item" role="menuitem" href="seo-company-in-chennai.html">
+              <span class="home-dd-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+              <span class="home-dd-text"><strong>SEO</strong><small>Rank where it matters</small></span>
+            </a>
+            <a class="home-dropdown-item" role="menuitem" href="ppc-agency-in-chennai.html">
+              <span class="home-dd-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-7-7 18-2.5-7L3 11z"/></svg></span>
+              <span class="home-dd-text"><strong>PPC &amp; Google Ads</strong><small>Paid search that converts</small></span>
+            </a>
+            <a class="home-dropdown-item" role="menuitem" href="social-media-marketing-agency-in-chennai.html">
+              <span class="home-dd-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-3.9M8.6 13.5l6.8 3.9"/></svg></span>
+              <span class="home-dd-text"><strong>Social Media Marketing</strong><small>Grow every platform</small></span>
+            </a>
+            <a class="home-dropdown-item" role="menuitem" href="web-design-company-in-chennai.html">
+              <span class="home-dd-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 9l-4 4 4 4M16 9l4 4-4 4M13 5l-2 16"/></svg></span>
+              <span class="home-dd-text"><strong>Web Design</strong><small>Built to convert</small></span>
+            </a>
+            <a class="home-dropdown-item" role="menuitem" href="web-development-company-in-chennai.html">
+              <span class="home-dd-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+              <span class="home-dd-text"><strong>Web Development</strong><small>Engineered to perform</small></span>
+            </a>
+            <a class="home-dropdown-item" role="menuitem" href="content-marketing-agency-in-chennai.html">
+              <span class="home-dd-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16M4 12h10M4 19h13"/></svg></span>
+              <span class="home-dd-text"><strong>Content Marketing</strong><small>Words that work</small></span>
+            </a>
+            <a class="home-dropdown-item" role="menuitem" href="branding-company-in-chennai.html">
+              <span class="home-dd-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4V3z"/></svg></span>
+              <span class="home-dd-text"><strong>Branding</strong><small>Stand out and stay memorable</small></span>
+            </a>
+            <a class="home-dropdown-item" role="menuitem" href="personal-branding-agency-in-chennai.html">
+              <span class="home-dd-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></span>
+              <span class="home-dd-text"><strong>Personal Branding</strong><small>Build your own name</small></span>
+            </a>
+            <a class="home-dropdown-item" role="menuitem" href="video-production-company-in-chennai.html">
+              <span class="home-dd-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="M22 8l-5 4 5 4V8z"/></svg></span>
+              <span class="home-dd-text"><strong>Video Production</strong><small>Stories that stop scrolls</small></span>
+            </a>
+          </div>
+          <a href="#demoServices" class="home-dropdown-footer">View all services <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+      <div class="home-nav-item" data-home-dropdown="insights">
+        <button type="button" class="home-nav-link home-dd-toggle" aria-haspopup="true" aria-expanded="false">
+          Insights
+          <svg class="home-dd-caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="home-dropdown home-dropdown-insights" role="menu" aria-label="Insights">
+          <a class="home-dropdown-item" role="menuitem" href="#demoFaq">
+            <span class="home-dd-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></span>
+            <span class="home-dd-text"><strong>Blog</strong><small>Ideas &amp; expert perspectives</small></span>
+          </a>
+        </div>
+      </div>
+
+      <a href="contact.html" class="home-nav-link">Contact Us</a>
+      <a href="#contact" class="home-btn home-btn-primary home-nav-cta" data-consult-trigger>Book Free Consultation</a>
+    </nav>
+
+    <div class="home-header-actions">
+      <a href="#contact" class="home-btn home-btn-primary" data-consult-trigger>
+        Book Free Consultation
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+      <button class="home-nav-toggle" id="homeNavToggle" type="button" aria-label="Toggle menu" aria-expanded="false" aria-controls="homeNav">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= HERO ================= -->
+<section class="index-demo-hero" id="demoHero">
+  <div class="index-demo-hero-aurora" aria-hidden="true" data-demo-speed="0.04"></div>
+  <div class="index-demo-hero-grid" aria-hidden="true" data-demo-speed="0.06"></div>
+  <div class="index-demo-orb index-demo-orb-a" aria-hidden="true" data-demo-speed="0.12"><div class="index-demo-orb-inner"></div></div>
+  <div class="index-demo-orb index-demo-orb-b" aria-hidden="true" data-demo-speed="0.2"><div class="index-demo-orb-inner"></div></div>
+  <div class="index-demo-orb index-demo-orb-c" aria-hidden="true" data-demo-speed="0.28"><div class="index-demo-orb-inner"></div></div>
+
+  <div class="container index-demo-hero-inner">
+    <div class="index-demo-hero-content">
+      <span class="index-demo-eyebrow index-demo-fade">AI-Driven Growth Partner</span>
+      <h1 class="index-demo-hero-title" id="demoHeroTitle">Grow Your Business with a Tech-Driven <span class="index-demo-accent">Digital Marketing Agency in Chennai.</span></h1>
+      <p class="index-demo-hero-lead index-demo-fade" data-demo-delay="2">JOD Business Services combines business strategy, branding, technology, and digital marketing to deliver technology-driven solutions that strengthen your market presence and drive measurable growth.</p>
+
+      <div class="index-demo-btn-row index-demo-hero-cta index-demo-fade" data-demo-delay="3">
+        <a href="contact.html" class="index-demo-btn index-demo-btn-primary">
+          Book a Free Consultation
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a href="contact.html" class="index-demo-btn index-demo-btn-ghost">Contact Us</a>
+      </div>
+
+      <div class="index-demo-hero-metrics index-demo-fade" data-demo-delay="4">
+        <div><strong>10+</strong><span>Services</span></div>
+        <div><strong>AI</strong><span>Powered</span></div>
+        <div><strong>360&deg;</strong><span>Ecosystem</span></div>
+      </div>
+    </div>
+
+    <div class="index-demo-hero-visual" aria-hidden="true">
+      <div class="index-demo-hub" data-demo-speed="0.08">
+        <div class="index-demo-hub-ring"></div>
+        <div class="index-demo-hub-core">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
+        </div>
+        <div class="index-demo-hub-chip index-demo-hub-chip-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></div>
+        <div class="index-demo-hub-chip index-demo-hub-chip-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-7-7 18-2.5-7L3 11z"/></svg></div>
+        <div class="index-demo-hub-chip index-demo-hub-chip-3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-3.9M8.6 13.5l6.8 3.9"/></svg></div>
+        <div class="index-demo-hub-chip index-demo-hub-chip-4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div>
+      </div>
+
+      <div class="index-demo-float-wrap index-demo-float-wrap-perf" data-demo-speed="0.1">
+        <div class="index-demo-float index-demo-float-perf">
+          <strong>125.4K <em>+78%</em></strong>
+          <span>SEO Performance</span>
+        </div>
+      </div>
+      <div class="index-demo-float-wrap index-demo-float-wrap-badge" data-demo-speed="0.16">
+        <div class="index-demo-float index-demo-float-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>
+          <span>#1 on Google</span>
+        </div>
+      </div>
+      <div class="index-demo-float-wrap index-demo-float-wrap-ai" data-demo-speed="0.22">
+        <div class="index-demo-float index-demo-float-ai">
+          <i aria-hidden="true"></i>
+          <div><strong>AI Assistant</strong><small>Analysis complete — SEO up 78%</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="index-demo-scroll-cue" aria-hidden="true"><span>Scroll</span><i></i></div>
+</section>
+
+<!-- ================= TICKER ================= -->
+<div class="index-demo-ticker" aria-hidden="true">
+  <div class="index-demo-ticker-track">
+    <span class="index-demo-ticker-item"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>SEO</span>
+    <span class="index-demo-ticker-item"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>PPC &amp; Google Ads</span>
+    <span class="index-demo-ticker-item"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>Social Media Marketing</span>
+    <span class="index-demo-ticker-item"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>Web Design &amp; Development</span>
+    <span class="index-demo-ticker-item"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>Content Marketing</span>
+    <span class="index-demo-ticker-item"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>Branding</span>
+    <span class="index-demo-ticker-item"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>Personal Branding</span>
+    <span class="index-demo-ticker-item"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>Video Production</span>
+    <span class="index-demo-ticker-item"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>AI &amp; Automation</span>
+    <!-- duplicated set — CSS animates translateX(-50%) for a seamless loop -->
+    <span class="index-demo-ticker-item" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>SEO</span>
+    <span class="index-demo-ticker-item" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>PPC &amp; Google Ads</span>
+    <span class="index-demo-ticker-item" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>Social Media Marketing</span>
+    <span class="index-demo-ticker-item" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>Web Design &amp; Development</span>
+    <span class="index-demo-ticker-item" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>Content Marketing</span>
+    <span class="index-demo-ticker-item" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>Branding</span>
+    <span class="index-demo-ticker-item" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>Personal Branding</span>
+    <span class="index-demo-ticker-item" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>Video Production</span>
+    <span class="index-demo-ticker-item" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z"/></svg>AI &amp; Automation</span>
+  </div>
+</div>
+
+<!-- ================= STATS ================= -->
+<section class="index-demo-stats" id="demoStats">
+  <div class="container">
+    <div class="index-demo-section-head index-demo-head-light index-demo-fade">
+      <span class="index-demo-eyebrow index-demo-eyebrow-blue">Proof, Not Promises</span>
+      <h2>Numbers That Reflect <span class="index-demo-accent-blue">Real Growth.</span></h2>
+      <p>A quick look at the scale JOD Business Services has helped clients reach across search, ads, social and web.</p>
+    </div>
+
+    <div class="index-demo-stats-grid">
+      <div class="index-demo-stat-card index-demo-fade" data-demo-delay="0">
+        <span class="index-demo-stat-num" data-demo-count="150" data-demo-suffix="K+">0</span>
+        <span>Leads Generated</span>
+      </div>
+      <div class="index-demo-stat-card index-demo-fade" data-demo-delay="1">
+        <span class="index-demo-stat-num" data-demo-count="50" data-demo-suffix="+">0</span>
+        <span>Happy Clients</span>
+      </div>
+      <div class="index-demo-stat-card index-demo-fade" data-demo-delay="2">
+        <span class="index-demo-stat-num" data-demo-count="7" data-demo-suffix="+">0</span>
+        <span>Years Experience</span>
+      </div>
+      <div class="index-demo-stat-card index-demo-fade" data-demo-delay="3">
+        <span class="index-demo-stat-num" data-demo-count="500" data-demo-suffix="+">0</span>
+        <span>Projects Delivered</span>
+      </div>
+      <div class="index-demo-stat-card index-demo-fade" data-demo-delay="4">
+        <span class="index-demo-stat-num" data-demo-count="4.9" data-demo-suffix="/5">0</span>
+        <span>Client Rating</span>
+      </div>
+    </div>
+
+    <div class="index-demo-badges-row index-demo-fade" data-demo-delay="2">
+      <span class="index-demo-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-6"/></svg>Google Partner</span>
+      <span class="index-demo-badge"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M6.94 8.5H3.56V20.5H6.94V8.5Z"/><path d="M5.25 7.11A2.06 2.06 0 105.25 3a2.06 2.06 0 000 4.11Z"/><path d="M20.45 20.5h-3.37v-5.84c0-1.39-.03-3.18-1.94-3.18-1.94 0-2.24 1.52-2.24 3.08v5.94H9.53V8.5h3.24v1.64h.05c.45-.85 1.55-1.75 3.2-1.75 3.42 0 4.43 2.25 4.43 5.19v6.92Z"/></svg>Meta Business Partner</span>
+      <span class="index-demo-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.4 8.4-8 10-4.6-1.6-8-5-8-10V6l8-4z"/></svg>ISO 9001 Certified</span>
+      <span class="index-demo-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7l3-7z"/></svg>Times of India Award</span>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABOUT — sticky scrolly split ================= -->
+<section class="index-demo-about" id="demoAbout">
+  <div class="container index-demo-about-grid">
+
+    <div class="index-demo-about-visual">
+      <div class="index-demo-about-ring" aria-hidden="true"></div>
+      <div class="index-demo-about-blob" aria-hidden="true" data-demo-speed="0.08"></div>
+      <div class="index-demo-about-frame index-demo-scale-in">
+        <img src="images/Home Page About section.png" alt="The JOD Business Services team collaborating on a client strategy" loading="lazy" decoding="async">
+        <div class="index-demo-about-chip"><strong>7+ Years</strong><span>Driving Digital Growth</span></div>
+      </div>
+    </div>
+
+    <div class="index-demo-about-text">
+      <div class="index-demo-about-block index-demo-fade-left">
+        <span class="index-demo-about-num">01</span>
+        <h2>Strategy, Technology, Creative, and <span class="index-demo-accent-blue">Marketing in One Place.</span></h2>
+        <p>JOD Business Services is a tech-driven digital marketing company in Chennai focused on building stronger digital ecosystems for businesses.</p>
+      </div>
+
+      <div class="index-demo-about-block index-demo-fade-left">
+        <span class="index-demo-about-num">02</span>
+        <h3>One connected system, not scattered vendors.</h3>
+        <p>We bring together business strategy, branding, digital marketing, technology, creative services, and AI so your marketing channels work toward the same business goals.</p>
+      </div>
+
+      <div class="index-demo-about-block index-demo-fade-left">
+        <span class="index-demo-about-num">03</span>
+        <h3>Built for every stage, every industry.</h3>
+        <p>From websites, SEO, Google Ads, social media, content, branding, and video to AI-powered solutions, we bring the right expertise together to solve business challenges and create opportunities for growth.</p>
+        <ul class="index-demo-about-list">
+          <li>Not limited by industry, product, or service</li>
+          <li>Works for any business size or brand stage</li>
+          <li>Adapts to any target location</li>
+        </ul>
+        <div class="index-demo-btn-row index-demo-about-cta">
+          <a href="about.html" class="index-demo-btn index-demo-btn-dark">Explore JOD<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= SERVICES — horizontal pinned scroll gallery ================= -->
+<section class="index-demo-services" id="demoServices">
+  <div class="index-demo-divider index-demo-divider-top" aria-hidden="true">
+    <svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path d="M0,100 C 360,0 1080,0 1440,100 L1440,0 L0,0 Z" fill="var(--home-bg)"/></svg>
+  </div>
+
+  <div class="container index-demo-section-head index-demo-fade">
+    <span class="index-demo-eyebrow">Our Services</span>
+    <h2>End-to-End Digital Marketing, <span class="index-demo-accent">Built as One System.</span></h2>
+    <p>Whether you're building a new brand or transforming an existing digital presence, we bring the right combination of strategy, technology, creativity and execution — scroll to explore each discipline.</p>
+  </div>
+
+  <div class="index-demo-h-pin">
+    <div class="index-demo-h-sticky">
+      <div class="index-demo-h-track" data-demo-h-track>
+
+        <div class="index-demo-h-slide index-demo-h-intro">
+          <span class="index-demo-h-intro-eyebrow">What We Do</span>
+          <h2>Ten disciplines. <span class="index-demo-accent">One connected growth system.</span></h2>
+          <p>Every card below is a real service we deliver, designed to work together rather than in isolation.</p>
+          <span class="index-demo-h-intro-hint">Keep scrolling
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </span>
+        </div>
+
+        <div class="index-demo-h-slide index-demo-h-card">
+          <div class="index-demo-h-card-top">
+            <span class="index-demo-h-card-index">01 / 10</span>
+            <span class="index-demo-h-card-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></span>
+          </div>
+          <div class="index-demo-h-card-media"><img src="images/Seo.webp" alt="SEO services" loading="lazy" decoding="async"></div>
+          <h3>Not Getting Found When Your Customers Search?</h3>
+          <p>We improve your website's technical foundation, content, search relevance, and authority to build stronger organic visibility.</p>
+          <div class="index-demo-h-card-stats">
+            <div><strong>+248%</strong><span>Traffic</span></div>
+            <div><strong>1,240</strong><span>Keywords</span></div>
+          </div>
+          <a href="seo-company-in-chennai.html" class="index-demo-h-card-link">Explore SEO Services<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+
+        <div class="index-demo-h-slide index-demo-h-card">
+          <div class="index-demo-h-card-top">
+            <span class="index-demo-h-card-index">02 / 10</span>
+            <span class="index-demo-h-card-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l18-7-7 18-2.5-7L3 11z"/></svg></span>
+          </div>
+          <div class="index-demo-h-card-media"><img src="images/Google Ads.webp" alt="PPC and Google Ads services" loading="lazy" decoding="async"></div>
+          <h3>Getting Clicks but Not Enough Business?</h3>
+          <p>We build Google Ads campaigns around the searches your customers are actually making — right targeting, messaging and conversion tracking.</p>
+          <div class="index-demo-h-card-stats">
+            <div><strong>3.4x</strong><span>ROAS</span></div>
+            <div><strong>-38%</strong><span>Cost/Click</span></div>
+          </div>
+          <a href="ppc-agency-in-chennai.html" class="index-demo-h-card-link">Explore Google Ads<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+
+        <div class="index-demo-h-slide index-demo-h-card">
+          <div class="index-demo-h-card-top">
+            <span class="index-demo-h-card-index">03 / 10</span>
+            <span class="index-demo-h-card-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.5l6.8-3.9M8.6 13.5l6.8 3.9"/></svg></span>
+          </div>
+          <div class="index-demo-h-card-media"><img src="images/SMM.webp" alt="Social media marketing services" loading="lazy" decoding="async"></div>
+          <h3>Posting Regularly but Not Getting Enough Engagement?</h3>
+          <p>We create social media strategies and content designed to make your brand more visible, relevant, and engaging.</p>
+          <div class="index-demo-h-card-stats">
+            <div><strong>+312%</strong><span>Engagement</span></div>
+            <div><strong>50+</strong><span>Posts/Month</span></div>
+          </div>
+          <a href="social-media-marketing-agency-in-chennai.html" class="index-demo-h-card-link">Explore Social Media<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+
+        <div class="index-demo-h-slide index-demo-h-card">
+          <div class="index-demo-h-card-top">
+            <span class="index-demo-h-card-index">04 / 10</span>
+            <span class="index-demo-h-card-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 9l-4 4 4 4M16 9l4 4-4 4M13 5l-2 16"/></svg></span>
+          </div>
+          <div class="index-demo-h-card-media"><img src="images/Web Design.webp" alt="Website design and development services" loading="lazy" decoding="async"></div>
+          <h3>Turn Your Website Into a Stronger Business Asset</h3>
+          <p>We design and develop websites that make information easy to find, communicate your value clearly, and guide visitors toward action.</p>
+          <div class="index-demo-h-card-stats">
+            <div><strong>1.2s</strong><span>Load Time</span></div>
+            <div><strong>+64%</strong><span>Conversions</span></div>
+          </div>
+          <a href="web-design-company-in-chennai.html" class="index-demo-h-card-link">Explore Website Solutions<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+
+        <div class="index-demo-h-slide index-demo-h-card">
+          <div class="index-demo-h-card-top">
+            <span class="index-demo-h-card-index">05 / 10</span>
+            <span class="index-demo-h-card-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16M4 12h10M4 19h13"/></svg></span>
+          </div>
+          <div class="index-demo-h-card-media"><img src="images/Contnet Marketing.webp" alt="Content marketing services" loading="lazy" decoding="async"></div>
+          <h3>Creating Content but Not Getting the Right Response?</h3>
+          <p>We create purposeful content that educates your audience, strengthens brand authority, and improves search visibility.</p>
+          <div class="index-demo-h-card-stats">
+            <div><strong>120+</strong><span>Articles</span></div>
+            <div><strong>+90%</strong><span>Organic Reads</span></div>
+          </div>
+          <a href="content-marketing-agency-in-chennai.html" class="index-demo-h-card-link">Explore Content Marketing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+
+        <div class="index-demo-h-slide index-demo-h-card">
+          <div class="index-demo-h-card-top">
+            <span class="index-demo-h-card-index">06 / 10</span>
+            <span class="index-demo-h-card-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12v18l-6-4-6 4V3z"/></svg></span>
+          </div>
+          <div class="index-demo-h-card-media"><img src="images/Branding.webp" alt="Brand positioning services" loading="lazy" decoding="async"></div>
+          <h3>Is Your Brand Struggling to Stand Out?</h3>
+          <p>We define the ideas, messages, and market position that make your brand easier to recognize and remember.</p>
+          <div class="index-demo-h-card-stats">
+            <div><strong>8.4x</strong><span>Brand Recall</span></div>
+            <div><strong>40+</strong><span>Brands Built</span></div>
+          </div>
+          <a href="branding-company-in-chennai.html" class="index-demo-h-card-link">Explore Brand Positioning<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+
+        <div class="index-demo-h-slide index-demo-h-card">
+          <div class="index-demo-h-card-top">
+            <span class="index-demo-h-card-index">07 / 10</span>
+            <span class="index-demo-h-card-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></span>
+          </div>
+          <div class="index-demo-h-card-media"><img src="images/Personal Branding.webp" alt="Personal branding services" loading="lazy" decoding="async"></div>
+          <h3>Is Your Expertise Not Getting the Recognition It Deserves?</h3>
+          <p>We help founders, executives and professionals build a clear, credible personal brand that communicates their expertise.</p>
+          <div class="index-demo-h-card-stats">
+            <div><strong>+520%</strong><span>Profile Views</span></div>
+            <div><strong>5x</strong><span>Inbound Leads</span></div>
+          </div>
+          <a href="personal-branding-agency-in-chennai.html" class="index-demo-h-card-link">Explore Personal Branding<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+
+        <div class="index-demo-h-slide index-demo-h-card">
+          <div class="index-demo-h-card-top">
+            <span class="index-demo-h-card-index">08 / 10</span>
+            <span class="index-demo-h-card-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="M22 8l-5 4 5 4V8z"/></svg></span>
+          </div>
+          <div class="index-demo-h-card-media"><img src="images/Video Production.webp" alt="Video production services" loading="lazy" decoding="async"></div>
+          <h3>Struggling to Communicate Your Story Clearly?</h3>
+          <p>We create purposeful videos that simplify your message and communicate your brand story across every channel.</p>
+          <div class="index-demo-h-card-stats">
+            <div><strong>2.1M</strong><span>Total Views</span></div>
+            <div><strong>+75%</strong><span>Watch Time</span></div>
+          </div>
+          <a href="video-production-company-in-chennai.html" class="index-demo-h-card-link">Explore Video Production<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+
+        <div class="index-demo-h-slide index-demo-h-card">
+          <div class="index-demo-h-card-top">
+            <span class="index-demo-h-card-index">09 / 10</span>
+            <span class="index-demo-h-card-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="16" r="3"/><path d="M10.5 9.5L14.5 13.5"/></svg></span>
+          </div>
+          <div class="index-demo-h-card-media index-demo-h-card-media-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="16" r="3"/><path d="M10.5 9.5L14.5 13.5"/></svg></div>
+          <h3>Struggling to Reach the Right Audience?</h3>
+          <p>We plan influencer campaigns around audience relevance, creator credibility, and brand fit — communities that trust and engage.</p>
+          <div class="index-demo-h-card-stats">
+            <div><strong>60+</strong><span>Creators</span></div>
+            <div><strong>4.6x</strong><span>Avg. ROI</span></div>
+          </div>
+          <a href="contact.html" class="index-demo-h-card-link">Explore Influencer Marketing<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+
+        <div class="index-demo-h-slide index-demo-h-card">
+          <div class="index-demo-h-card-top">
+            <span class="index-demo-h-card-index">10 / 10</span>
+            <span class="index-demo-h-card-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l1.6 4.8L18 8l-4.4 1.2L12 14l-1.6-4.8L6 8l4.4-1.2L12 2z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z"/></svg></span>
+          </div>
+          <div class="index-demo-h-card-media index-demo-h-card-media-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l1.6 4.8L18 8l-4.4 1.2L12 14l-1.6-4.8L6 8l4.4-1.2L12 2z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15z"/></svg></div>
+          <h3>Are Manual Processes Slowing Down Your Business?</h3>
+          <p>We connect CRM, automation, AI, and your existing tools to streamline workflows and help your team operate more efficiently.</p>
+          <div class="index-demo-h-card-stats">
+            <div><strong>-42%</strong><span>CAC</span></div>
+            <div><strong>24/7</strong><span>Optimization</span></div>
+          </div>
+          <a href="contact.html" class="index-demo-h-card-link">Explore AI &amp; Automation<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
+
+      </div>
+
+      <div class="index-demo-h-progress"><span class="index-demo-h-progress-fill"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= JOURNEY — reuses #homeJourney* markup/JS, new shell ================= -->
+<section class="index-demo-journey" id="demoJourney">
+  <svg class="index-demo-journey-path" viewBox="0 0 1200 500" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="demoJourneyGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#2f8fef"/>
+        <stop offset="1" stop-color="#8ec9ff"/>
+      </linearGradient>
+    </defs>
+    <path id="demoJourneyPath" d="M-20,60 C 260,-20 300,260 620,240 S 940,480 1220,420" fill="none" stroke="url(#demoJourneyGrad)" stroke-width="2.5"/>
+  </svg>
+
+  <div class="container">
+    <div class="index-demo-section-head index-demo-fade">
+      <span class="index-demo-eyebrow">Our Approach</span>
+      <h2>A Clear Process Built <span class="index-demo-accent">Around Your Business.</span></h2>
+      <p>Every effective marketing strategy starts with understanding the business behind it — our process connects research, strategy, execution, measurement, and continuous improvement.</p>
+    </div>
+
+    <div class="home-journey-box index-demo-scale-in">
+      <div class="home-journey-card" id="homeJourneyCard"></div>
+      <div class="home-journey-progress">
+        <span class="home-journey-progress-fill" id="homeJourneyFill"></span>
+      </div>
+      <div class="home-journey-nav">
+        <button type="button" class="home-journey-btn" id="homeJourneyPrev">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg> Previous
+        </button>
+        <button type="button" class="home-journey-btn home-journey-btn-primary" id="homeJourneyNext">
+          Next Step <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="home-journey-track-wrap index-demo-fade">
+      <div class="home-journey-track" id="homeJourneyTrack"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FAQ — reuses #homeFaq* markup/JS, new shell ================= -->
+<section class="index-demo-faq" id="demoFaq">
+  <span class="index-demo-faq-mark" aria-hidden="true">FAQ</span>
+  <div class="container home-faq-wrap">
+    <div class="index-demo-fade-left">
+      <span class="index-demo-eyebrow index-demo-eyebrow-blue">FAQ</span>
+      <h2 class="index-demo-faq-heading">Frequently Asked <span class="index-demo-accent-blue">Questions.</span></h2>
+      <p class="index-demo-faq-lead">Everything you need to know about working with JOD Business Services.</p>
+      <div class="home-faq-pills" id="homeFaqPills"></div>
+    </div>
+    <div class="home-faq-list index-demo-fade-right" id="homeFaqList"></div>
+  </div>
+</section>
+
+<!-- ================= FINAL CTA ================= -->
+<section class="index-demo-cta" id="contact">
+  <div class="index-demo-cta-blob index-demo-cta-blob-a" aria-hidden="true"></div>
+  <div class="index-demo-cta-blob index-demo-cta-blob-b" aria-hidden="true"></div>
+  <div class="container">
+    <div class="index-demo-cta-card index-demo-scale-in">
+      <div>
+        <span class="index-demo-eyebrow">Ready to Grow</span>
+        <h2>Let's build a <span class="index-demo-accent">stronger business,</span> together.</h2>
+        <p>Whether you're launching a new brand, expanding your market presence, or transforming your digital ecosystem, JOD Business Services is ready to help you move forward with confidence.</p>
+        <div class="index-demo-cta-actions">
+          <a href="mailto:hello@jodbusinessservices.com" class="index-demo-btn index-demo-btn-primary">
+            Book Your Free Consultation
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <a href="#demoServices" class="index-demo-btn index-demo-btn-ghost">Explore Services</a>
+        </div>
+      </div>
+      <div class="index-demo-cta-info">
+        <div class="index-demo-cta-info-item">
+          <span class="index-demo-cta-info-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+          <div><strong>Call Us</strong><a href="tel:+917395905064">+91 73959 05064</a></div>
+        </div>
+        <div class="index-demo-cta-info-item">
+          <span class="index-demo-cta-info-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>
+          <div><strong>Email</strong><a href="mailto:contact@jodbs.com">contact@jodbs.com</a></div>
+        </div>
+        <div class="index-demo-cta-info-item">
+          <span class="index-demo-cta-info-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s7-7.5 7-12a7 7 0 10-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg></span>
+          <div><strong>Visit</strong><span>Anna Salai, Chennai</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ================= FOOTER (unchanged from index.html) ================= -->
+<footer class="home-footer">
+  <div class="container home-footer-top">
+    <div class="home-footer-brand">
+      <a href="#demoHero" class="home-logo home-logo-footer">
+        <img src="images/white-logo.webp" alt="JOD Business Services" class="home-logo-img">
+      </a>
+      <p>A tech-driven digital marketing agency helping businesses build sustainable visibility across organic, social, and AI-powered growth.</p>
+    </div>
+
+    <div class="home-footer-col">
+      <h4>Services</h4>
+      <a href="seo-company-in-chennai.html">SEO</a>
+      <a href="ppc-agency-in-chennai.html">PPC &amp; Google Ads</a>
+      <a href="social-media-marketing-agency-in-chennai.html">Social Media Marketing</a>
+      <a href="index.html#services">Website Design &amp; Development</a>
+      <a href="content-marketing-agency-in-chennai.html">Content Marketing</a>
+    </div>
+    <div class="home-footer-col">
+      <h4 class="footer-col-hidden-heading" aria-hidden="true">&nbsp;</h4>
+      <a href="index.html#services">Brand Positioning</a>
+      <a href="index.html#services">Personal Branding</a>
+      <a href="video-production-company-in-chennai.html">Video Production</a>
+      <a href="index.html#services">Influencer Marketing</a>
+      <a href="index.html#services">AI, Automation &amp; CRM</a>
+    </div>
+    <div class="home-footer-col home-footer-contact-col">
+      <h4>Contact Us</h4>
+      <address class="home-footer-contact-address"><a href="https://www.google.com/maps/search/?api=1&amp;query=JOD%20Business%20Services%2C%20Lakshmi%20Bhavan%2C%20Sundaram%20Avenue%2C%20Anna%20Salai%2C%20Chennai&amp;query_place_id=ChIJxd8fHI1nUjoRvng0Kpv7Pzw" target="_blank" rel="noopener">Lakshmi Bhavan, Sundaram Avenue, Anna Salai, Chennai, Tamil Nadu 600006</a></address>
+      <a href="mailto:contact@jodbs.com">contact@jodbs.com</a>
+      <a href="mailto:growth@jodbs.com">growth@jodbs.com</a>
+      <a href="tel:+917395905064">+91 73959 05064</a>
+      <p class="home-footer-contact-hours">Mon &ndash; Sat, 9:30 AM &ndash; 6:30 PM</p>
+      <div class="home-footer-social">
+        <a href="https://www.linkedin.com/company/jod-business-services/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M6.94 8.5H3.56V20.5H6.94V8.5Z"/><path d="M5.25 7.11A2.06 2.06 0 105.25 3a2.06 2.06 0 000 4.11Z"/><path d="M20.45 20.5h-3.37v-5.84c0-1.39-.03-3.18-1.94-3.18-1.94 0-2.24 1.52-2.24 3.08v5.94H9.53V8.5h3.24v1.64h.05c.45-.85 1.55-1.75 3.2-1.75 3.42 0 4.43 2.25 4.43 5.19v6.92Z"/></svg></a>
+        <a href="https://www.instagram.com/jodbusinessservices/" target="_blank" rel="noopener" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        <a href="https://www.facebook.com/people/JOD-Business-Services/61567371022797/" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M15 3h-2a5 5 0 00-5 5v3H6v4h2v9h4v-9h3l1-4h-4V8a1 1 0 011-1h3z"/></svg></a>
+      </div>
+    </div>
+  </div>
+  <div class="container home-footer-bottom">
+    <span>&copy; <span id="homeYear"></span> JOD Business Services. All rights reserved. <em style="font-style:normal;opacity:.6">— Experimental parallax demo build.</em></span>
+    <div class="footer-legal-links">
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms-conditions.html">Terms &amp; Conditions</a>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js?v=20260930-2"></script>
+<script src="index-demo.js?v=20260930-2"></script>
+<!-- ================= FLOATING CONTACT BUTTONS (unchanged from index.html) ================= -->
+<a href="https://wa.me/917395905064" target="_blank" rel="noopener" class="jod-fab jod-fab-whatsapp" aria-label="Chat with us on WhatsApp" title="Chat on WhatsApp">
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.79.47 3.45 1.29 4.9L2 22l5.35-1.4a9.86 9.86 0 0 0 4.69 1.19h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.78 14.06c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.11.11-1.79-.11a16.5 16.5 0 0 1-1.58-.58c-2.78-1.2-4.58-4-4.72-4.19-.14-.19-1.13-1.5-1.13-2.87 0-1.36.71-2.03.97-2.31.24-.26.54-.32.72-.32.18 0 .36 0 .52.01.17.01.39-.06.61.47.24.58.81 2 .88 2.14.07.14.11.31.02.5-.09.19-.14.31-.28.48-.14.17-.3.38-.42.51-.14.15-.29.31-.12.6.17.29.76 1.25 1.63 2.03 1.12 1 2.06 1.31 2.35 1.46.29.15.46.13.63-.08.17-.2.72-.83.91-1.12.19-.29.38-.24.63-.14.26.1 1.66.78 1.94.92.28.14.47.21.54.33.07.12.07.71-.17 1.39z"/></svg>
+</a>
+<a href="#" class="jod-fab jod-fab-call" aria-label="Call us" title="Call us">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+</a>
+
+</body>
+</html>

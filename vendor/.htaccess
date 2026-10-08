@@ -1,0 +1,10 @@
+# The PHPMailer library files inside this folder are only ever loaded
+# server-side by mail-handler.php's require statements — nobody needs to
+# request them directly in a browser, so direct access is blocked outright.
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+  Order allow,deny
+  Deny from all
+</IfModule>

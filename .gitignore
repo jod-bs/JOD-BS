@@ -1,0 +1,41 @@
+# ==============================================================================
+# JOD Business Services (.gitignore)
+# ==============================================================================
+
+# Environment files & Secrets
+.env
+.env.*
+!.env.example
+
+# Credentials & Legacy config holding secrets
+smtp-config.php
+
+# Server & Application Logs
+*.log
+error_log
+
+# Archives, Backups & Dumps
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.bak
+*.backup
+*.sql
+images/Clients_backup/
+
+# System & OS Artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor & IDE Directories
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# WordPress user uploads & cache (if applicable)
+blog/wp-content/uploads/
+blog/wp-content/cache/
+blog/wp-content/upgrade/
