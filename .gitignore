@@ -9,6 +9,7 @@
 
 # Credentials & Legacy config holding secrets
 smtp-config.php
+test.php
 
 # Server & Application Logs
 *.log
