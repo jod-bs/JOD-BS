@@ -54,7 +54,7 @@ img{max-width:100%;display:block}
   50%{transform:translateY(-14px)}
 }
 img{animation:jumpThreeCenter 5s infinite linear}
-.home-logo-img,.footer-logo-img,.a2-pillar-logo img,.about-pillar-logo img,.about-eco-branch-logo img{animation:none}
+.home-logo-img,.footer-logo-img,.a2-pillar-logo img,.about-pillar-logo img,.about-eco-branch-logo img,.home-client-logo{animation:none}
 @media (prefers-reduced-motion:reduce){
   img{animation:none!important}
 }
@@ -1187,13 +1187,13 @@ body.ppc-page .ppc-funnel-arrow{width:20px;height:20px;color:var(--border);flex-
 .home-page .home-clients-carousel-wrap::after{right:0;background:linear-gradient(270deg,var(--home-bg) 15%,transparent)}
 .home-page .home-clients-viewport{
   overflow:hidden;width:100%;user-select:none;-webkit-user-select:none;padding:12px 0;
+  cursor:grab;touch-action:pan-y;
 }
+.home-page .home-clients-viewport.is-dragging{cursor:grabbing}
+.home-page .home-clients-viewport.is-draggable .home-clients-track{animation:none;overflow:visible}
 .home-page .home-clients-track{
   display:flex;align-items:center;width:max-content;will-change:transform;
   animation:homeClientsMarquee 28s linear infinite;
-}
-.home-page .home-clients-viewport:hover .home-clients-track{
-  animation-play-state:paused;
 }
 .home-page .home-clients-group{
   display:flex;align-items:center;gap:24px;padding-right:24px;flex-shrink:0;
@@ -1214,8 +1214,11 @@ body.ppc-page .ppc-funnel-arrow{width:20px;height:20px;color:var(--border);flex-
   max-width:100%;max-height:74px;width:auto;height:auto;object-fit:contain;display:block;
   transition:transform .3s var(--home-ease);
 }
-.home-page .home-client-card:hover .home-client-logo{
+/* .home-page .home-client-card:hover .home-client-logo{
   transform:scale(1.06);
+} */
+.home-page .home-client-card:hover .home-client-logo{
+  transform:scale(calc(var(--logo-scale, 1) * 1.06));
 }
 
 @keyframes homeClientsMarquee{

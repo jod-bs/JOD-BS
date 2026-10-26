@@ -1319,19 +1319,91 @@ document.addEventListener("DOMContentLoaded", () => {
   const homeLogoTrack = document.getElementById("homeLogoMarqueeTrack");
   if (homeLogoTrack) homeLogoTrack.innerHTML += homeLogoTrack.innerHTML;
 
-  /* ---------------- Our Clients Continuous Marquee Pause on Touch ---------------- */
+  /* ---------------- Our Clients: auto-scroll, drag to move, then resume ---------------- */
   const clientsTrack = document.getElementById("homeClientsTrack");
   const clientsViewport = document.getElementById("homeClientsViewport");
   if (clientsTrack && clientsViewport) {
-    clientsViewport.addEventListener("touchstart", () => {
-      clientsTrack.style.animationPlayState = "paused";
-    }, { passive: true });
-    clientsViewport.addEventListener("touchend", () => {
-      clientsTrack.style.animationPlayState = "running";
-    }, { passive: true });
-    clientsViewport.addEventListener("touchcancel", () => {
-      clientsTrack.style.animationPlayState = "running";
-    }, { passive: true });
+    clientsViewport.classList.add("is-draggable");
+
+    let offset = 0;
+    let half = 0;
+    let dragging = false;
+    let lastX = 0;
+    let lastTime = performance.now();
+
+    const marqueeDuration = () => {
+      if (window.innerWidth <= 540) return 18000;
+      if (window.innerWidth <= 860) return 22000;
+      return 28000;
+    };
+
+    const measure = () => {
+      half = clientsTrack.scrollWidth / 2;
+    };
+
+    clientsViewport.querySelectorAll("img").forEach((img) => {
+      img.draggable = false;
+      img.addEventListener("load", measure);
+    });
+
+    const wrapOffset = (value) => {
+      if (half <= 0) return 0;
+      let next = value % half;
+      if (next > 0) next -= half;
+      return next;
+    };
+
+    const applyOffset = () => {
+      clientsTrack.style.transform = "translate3d(" + offset + "px,0,0)";
+    };
+
+    const onPointerDown = (event) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      dragging = true;
+      lastX = event.clientX;
+      clientsViewport.classList.add("is-dragging");
+      clientsViewport.setPointerCapture(event.pointerId);
+    };
+
+    const onPointerMove = (event) => {
+      if (!dragging) return;
+      const delta = event.clientX - lastX;
+      lastX = event.clientX;
+      offset = wrapOffset(offset + delta);
+      applyOffset();
+    };
+
+    const endDrag = (event) => {
+      if (!dragging) return;
+      dragging = false;
+      clientsViewport.classList.remove("is-dragging");
+      if (clientsViewport.hasPointerCapture(event.pointerId)) {
+        clientsViewport.releasePointerCapture(event.pointerId);
+      }
+    };
+
+    clientsViewport.addEventListener("pointerdown", onPointerDown);
+    clientsViewport.addEventListener("pointermove", onPointerMove);
+    clientsViewport.addEventListener("pointerup", endDrag);
+    clientsViewport.addEventListener("pointercancel", endDrag);
+
+    measure();
+    window.addEventListener("resize", () => {
+      measure();
+      offset = wrapOffset(offset);
+      applyOffset();
+    });
+
+    const step = (now) => {
+      const dt = Math.min(0.05, (now - lastTime) / 1000);
+      lastTime = now;
+      if (!dragging && !prefersReducedMotion && half > 0) {
+        offset = wrapOffset(offset - (half / (marqueeDuration() / 1000)) * dt);
+        applyOffset();
+      }
+      requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   }
 
   /* ---------------- Reveal on scroll (home-reveal + floating cards) ---------------- */
@@ -2178,7 +2250,7 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <div class="consult-field">
           <label for="cm-business">Business Name</label>
-          <input class="consult-input" type="text" id="cm-business" name="business" placeholder="Jodbs.com" autocomplete="organization">
+          <input class="consult-input" type="text" id="cm-business" name="business" placeholder="JOD Business Services" autocomplete="organization">
         </div>
         <div class="consult-field">
           <label for="cm-email">Email Address</label>

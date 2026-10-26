@@ -15,7 +15,7 @@
  * - Honeypot spam bot trapping (_honey)
  * - Strict server-side input validation and bounded length constraints
  * - Strict HTML entity escaping for email body (XSS / HTML injection defense)
- * - Safe environment-based SMTP loading (ZeptoMail / PHPMailer)
+ * - Zoho Mail send over HTTPS (port 443), so GoDaddy can deliver mail
  * - Safe failure handling without credential or filesystem path disclosure
  * ==============================================================================
  */
@@ -28,12 +28,6 @@ ini_set('log_errors', '1');
 error_reporting(E_ALL);
 
 require_once __DIR__ . '/smtp-config.php';
-require_once __DIR__ . '/vendor/phpmailer/Exception.php';
-require_once __DIR__ . '/vendor/phpmailer/PHPMailer.php';
-require_once __DIR__ . '/vendor/phpmailer/SMTP.php';
-
-use PHPMailer\PHPMailer\Exception;
-use PHPMailer\PHPMailer\PHPMailer;
 
 /**
  * Send an HTTP redirect and terminate execution.
@@ -52,7 +46,14 @@ function jod_redirect(string $url): void
 function jod_with_flag(string $url, string $flag): string
 {
     $cleanUrl = str_replace(["\r", "\n"], '', $url);
-    return $cleanUrl . (strpos($cleanUrl, '?') === false ? '?' : '&') . urlencode($flag);
+    $separator = strpos($cleanUrl, '?') === false ? '?' : '&';
+
+    // Keep a simple key=value flag readable. urlencode() would turn "=" into "%3D".
+    if (preg_match('/^[A-Za-z0-9_]+=[A-Za-z0-9_]+$/', $flag)) {
+        return $cleanUrl . $separator . $flag;
+    }
+
+    return $cleanUrl . $separator . rawurlencode($flag);
 }
 
 /**
@@ -153,6 +154,224 @@ function jod_is_same_origin(): bool
     return true;
 }
 
+/**
+ * Zoho Mail API credentials and the From/To addresses must all be present.
+ */
+function jod_zoho_is_configured(): bool
+{
+    foreach (['ZOHO_CLIENT_ID', 'ZOHO_CLIENT_SECRET', 'ZOHO_REFRESH_TOKEN', 'ZOHO_ACCOUNT_ID', 'SMTP_FROM_EMAIL', 'SMTP_TO_EMAIL'] as $key) {
+        $value = trim((string)jod_env($key, ''));
+        if ($value === '' || stripos($value, 'replace') !== false) {
+            return false;
+        }
+    }
+
+    return preg_match('/^\d{1,30}$/', trim((string)jod_env('ZOHO_ACCOUNT_ID', ''))) === 1;
+}
+
+/**
+ * POST to Zoho over HTTPS only. The caller chooses the URL from a fixed host list.
+ *
+ * @param array<int, string> $headers
+ * @return array{ok: bool, status: int, body: string}
+ */
+function jod_https_post(string $url, array $headers, string $body, int $timeout = 20): array
+{
+    $parts = parse_url($url);
+    $host = strtolower((string)($parts['host'] ?? ''));
+    $allowedHosts = ['accounts.zoho.in', 'mail.zoho.in'];
+    if (($parts['scheme'] ?? '') !== 'https' || !in_array($host, $allowedHosts, true)) {
+        error_log('[JOD Contact Form] Blocked an unexpected mail request host.');
+        return ['ok' => false, 'status' => 0, 'body' => ''];
+    }
+
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        if ($ch === false) {
+            error_log('[JOD Contact Form] Could not start the HTTPS client.');
+            return ['ok' => false, 'status' => 0, 'body' => ''];
+        }
+
+        $options = [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $body,
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HEADER => false,
+            CURLOPT_TIMEOUT => $timeout,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_USERAGENT => 'JOD-Contact-Form',
+        ];
+        if (defined('CURLPROTO_HTTPS')) {
+            $options[CURLOPT_PROTOCOLS] = CURLPROTO_HTTPS;
+            $options[CURLOPT_REDIR_PROTOCOLS] = CURLPROTO_HTTPS;
+        }
+        curl_setopt_array($ch, $options);
+
+        $response = curl_exec($ch);
+        $status = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($response === false) {
+            error_log('[JOD Contact Form] Zoho HTTPS connection failed.');
+            if ($curlError !== '') {
+                error_log('[JOD Contact Form] HTTPS client: connection error.');
+            }
+            return ['ok' => false, 'status' => $status, 'body' => ''];
+        }
+
+        return ['ok' => true, 'status' => $status, 'body' => (string)$response];
+    }
+
+    $context = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'header' => implode("\r\n", $headers),
+            'content' => $body,
+            'timeout' => $timeout,
+            'ignore_errors' => true,
+            'follow_location' => 0,
+        ],
+        'ssl' => [
+            'verify_peer' => true,
+            'verify_peer_name' => true,
+        ],
+    ]);
+
+    $response = @file_get_contents($url, false, $context);
+    $status = 0;
+    if (isset($http_response_header[0]) && preg_match('/\s(\d{3})\s/', (string)$http_response_header[0], $match)) {
+        $status = (int)$match[1];
+    }
+    if ($response === false) {
+        error_log('[JOD Contact Form] Zoho HTTPS connection failed.');
+        return ['ok' => false, 'status' => $status, 'body' => ''];
+    }
+
+    return ['ok' => true, 'status' => $status, 'body' => (string)$response];
+}
+
+/**
+ * Exchange the long-lived refresh token for a one-hour access token.
+ */
+function jod_zoho_access_token(): ?string
+{
+    $payload = http_build_query([
+        'grant_type' => 'refresh_token',
+        'client_id' => trim((string)jod_env('ZOHO_CLIENT_ID', '')),
+        'client_secret' => trim((string)jod_env('ZOHO_CLIENT_SECRET', '')),
+        'refresh_token' => trim((string)jod_env('ZOHO_REFRESH_TOKEN', '')),
+    ], '', '&', PHP_QUERY_RFC3986);
+
+    $result = jod_https_post(
+        'https://accounts.zoho.in/oauth/v2/token',
+        [
+            'Accept: application/json',
+            'Content-Type: application/x-www-form-urlencoded',
+        ],
+        $payload
+    );
+
+    $data = json_decode($result['body'], true);
+    if (
+        !$result['ok']
+        || $result['status'] < 200
+        || $result['status'] >= 300
+        || !is_array($data)
+        || !isset($data['access_token'])
+        || !is_string($data['access_token'])
+        || $data['access_token'] === ''
+    ) {
+        $reason = 'HTTP ' . $result['status'];
+        if (is_array($data) && isset($data['error']) && is_string($data['error'])) {
+            $reason = preg_replace('/[\r\n]/', ' ', $data['error']) ?? $reason;
+        }
+        error_log('[JOD Contact Form] Zoho token request failed: ' . $reason);
+        return null;
+    }
+
+    if (preg_match('/[\r\n\x00]/', $data['access_token'])) {
+        error_log('[JOD Contact Form] Zoho token request returned an unusable token.');
+        return null;
+    }
+
+    return $data['access_token'];
+}
+
+/**
+ * Send one enquiry through the Zoho Mail HTTPS API.
+ */
+function jod_zoho_send(string $accessToken, string $subject, string $html): bool
+{
+    $accountId = trim((string)jod_env('ZOHO_ACCOUNT_ID', ''));
+    $from = trim((string)jod_env('SMTP_FROM_EMAIL', ''));
+    $to = trim((string)jod_env('SMTP_TO_EMAIL', ''));
+
+    if (
+        preg_match('/^\d{1,30}$/', $accountId) !== 1
+        || !filter_var($from, FILTER_VALIDATE_EMAIL)
+        || !filter_var($to, FILTER_VALIDATE_EMAIL)
+        || strpbrk($from . $to, "\r\n") !== false
+    ) {
+        error_log('[JOD Contact Form] Zoho sender settings are invalid.');
+        return false;
+    }
+
+    $payload = json_encode([
+        'fromAddress' => $from,
+        'toAddress' => $to,
+        'subject' => $subject,
+        'content' => $html,
+        'mailFormat' => 'html',
+        'encoding' => 'UTF-8',
+    ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
+    if ($payload === false) {
+        error_log('[JOD Contact Form] Could not prepare the enquiry email.');
+        return false;
+    }
+
+    $result = jod_https_post(
+        'https://mail.zoho.in/api/accounts/' . $accountId . '/messages',
+        [
+            'Accept: application/json',
+            'Content-Type: application/json',
+            'Authorization: Zoho-oauthtoken ' . $accessToken,
+        ],
+        $payload
+    );
+
+    $data = json_decode($result['body'], true);
+    $apiCode = null;
+    if (is_array($data) && isset($data['status']['code'])) {
+        $apiCode = (int)$data['status']['code'];
+    }
+
+    $hasError = is_array($data) && (
+        isset($data['error'])
+        || (isset($data['data']['errorCode']) && $data['data']['errorCode'] !== '')
+    );
+
+    if ($result['ok'] && $result['status'] >= 200 && $result['status'] < 300 && $apiCode === 200 && !$hasError) {
+        return true;
+    }
+
+    $reason = 'HTTP ' . $result['status'];
+    if (is_array($data)) {
+        $description = $data['status']['description'] ?? $data['data']['errorCode'] ?? null;
+        if (is_string($description) && $description !== '') {
+            $reason = preg_replace('/[\r\n]/', ' ', $description) ?? $reason;
+            $reason = substr($reason, 0, 180);
+        }
+    }
+    error_log('[JOD Contact Form] Zoho send failed: ' . $reason);
+    return false;
+}
+
 // 1. Enforce POST requests only
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {
     jod_redirect('index.html');
@@ -200,84 +419,56 @@ if (mb_strlen($safeSubject, 'UTF-8') > 200) {
     $safeSubject = mb_substr($safeSubject, 0, 200, 'UTF-8');
 }
 
-// 6. Check if ZeptoMail SMTP credentials are configured in .env
-if (!jod_smtp_is_configured()) {
-    // Fail safely server-side without leaking missing secrets to the browser
-    error_log('[JOD Contact Form] Submission withheld: SMTP credentials (ZeptoMail) are not yet configured in .env.');
+// 6. Check Zoho Mail API credentials in .env
+if (!jod_zoho_is_configured()) {
+    error_log('[JOD Contact Form] Submission withheld: Zoho Mail API settings are incomplete in .env.');
     jod_redirect(jod_with_flag($referer, 'form=error'));
 }
 
-// 7. Dispatch email via authenticated PHPMailer
-$mail = new PHPMailer(true);
+// 7. Build the same enquiry table the SMTP mailer used to send
+$skipFields = ['_subject', '_next', '_honey', '_captcha', '_template'];
+$rows = '';
+$fieldCount = 0;
 
-try {
-    $mail->isSMTP();
-    $mail->Host = SMTP_HOST;
-    $mail->SMTPAuth = true;
-    $mail->Username = SMTP_USERNAME;
-    $mail->Password = SMTP_PASSWORD;
-    $mail->SMTPSecure = (SMTP_ENCRYPTION === 'ssl' || SMTP_ENCRYPTION === 'smtps')
-        ? PHPMailer::ENCRYPTION_SMTPS
-        : PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port = SMTP_PORT;
-    $mail->SMTPDebug = 0; // Never leak connection or credentials in production
-    $mail->CharSet = 'UTF-8';
-    $mail->Timeout = 20;
-
-    $mail->setFrom(SMTP_FROM_EMAIL, SMTP_FROM_NAME);
-    $mail->addAddress(SMTP_TO_EMAIL, SMTP_TO_NAME);
-    $mail->addReplyTo($email, $name);
-
-    $mail->Subject = $safeSubject;
-
-    // Build HTML table rows safely with XSS protection
-    $skipFields = ['_subject', '_next', '_honey', '_captcha', '_template'];
-    $rows = '';
-    $fieldCount = 0;
-
-    foreach ($_POST as $key => $value) {
-        if (in_array($key, $skipFields, true)) {
-            continue;
-        }
-
-        $fieldCount++;
-        if ($fieldCount > 30) { // Limit field count
-            break;
-        }
-
-        if (is_array($value)) {
-            $value = implode(', ', array_map('strval', $value));
-        }
-
-        $cleanKey = preg_replace('/[^\w\s\-]/u', '', (string)$key);
-        $label = ucwords(str_replace(['_', '-'], ' ', $cleanKey));
-        $safeLabel = htmlspecialchars($label, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-
-        $valStr = trim((string)$value);
-        if (mb_strlen($valStr, 'UTF-8') > 5000) {
-            $valStr = mb_substr($valStr, 0, 5000, 'UTF-8');
-        }
-        $safeValue = nl2br(htmlspecialchars($valStr, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
-
-        $rows .= "<tr>"
-            . "<td style=\"padding:9px 14px;font-weight:600;border:1px solid #e7e9f6;background:#f6f7fc;white-space:nowrap\">{$safeLabel}</td>"
-            . "<td style=\"padding:9px 14px;border:1px solid #e7e9f6\">{$safeValue}</td>"
-            . "</tr>";
+foreach ($_POST as $key => $value) {
+    if (in_array($key, $skipFields, true)) {
+        continue;
     }
 
-    $mail->isHTML(true);
-    $mail->Body = "<table style=\"border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px;color:#1a1c2c\">{$rows}</table>";
-    $mail->AltBody = "New enquiry from the JOD Business Services website:\n\n"
-        . strip_tags(str_replace(['<tr>', '</tr>', '</td><td'], ["\n", '', ': '], $mail->Body));
+    $fieldCount++;
+    if ($fieldCount > 30) {
+        break;
+    }
 
-    $mail->send();
+    if (is_array($value)) {
+        $value = implode(', ', array_map('strval', $value));
+    }
+
+    $cleanKey = preg_replace('/[^\w\s\-]/u', '', (string)$key);
+    $label = ucwords(str_replace(['_', '-'], ' ', $cleanKey));
+    $safeLabel = htmlspecialchars($label, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+    $valStr = trim((string)$value);
+    if (mb_strlen($valStr, 'UTF-8') > 5000) {
+        $valStr = mb_substr($valStr, 0, 5000, 'UTF-8');
+    }
+    $safeValue = nl2br(htmlspecialchars($valStr, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'));
+
+    $rows .= "<tr>"
+        . "<td style=\"padding:9px 14px;font-weight:600;border:1px solid #e7e9f6;background:#f6f7fc;white-space:nowrap\">{$safeLabel}</td>"
+        . "<td style=\"padding:9px 14px;border:1px solid #e7e9f6\">{$safeValue}</td>"
+        . "</tr>";
+}
+
+$htmlBody = "<table style=\"border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px;color:#1a1c2c\">{$rows}</table>";
+
+try {
+    $accessToken = jod_zoho_access_token();
+    if ($accessToken === null || !jod_zoho_send($accessToken, $safeSubject, $htmlBody)) {
+        jod_redirect(jod_with_flag($referer, 'form=error'));
+    }
     jod_redirect($next);
-} catch (Exception $e) {
-    // PHPMailer specific exception
-    error_log('[JOD Contact Form] Mail sending failed: ' . $mail->ErrorInfo);
-    jod_redirect(jod_with_flag($referer, 'form=error'));
 } catch (Throwable $t) {
-    // General PHP 7/8 throwable
-    error_log('[JOD Contact Form] Unexpected server error: ' . $t->getMessage());
+    error_log('[JOD Contact Form] Unexpected server error.');
     jod_redirect(jod_with_flag($referer, 'form=error'));
 }

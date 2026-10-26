@@ -245,12 +245,27 @@ require_once ASTRA_THEME_DIR . 'inc/core/deprecated/deprecated-functions.php';
  * =========================================================
  */
 
+// add_filter( 'astra_site_title', 'jod_business_custom_logo' );
+
+// function jod_business_custom_logo( $site_title ) {
+
+// 	$logo_url = 'https://jodbs.com/blog/wp-content/uploads/2026/09/black-logo-1.webp';
+
+// 	return '<img
+// 		src="' . esc_url( $logo_url ) . '"
+// 		alt="JOD Business Services"
+// 		class="jod-header-logo"
+// 		style="width:150px; height:auto; max-width:250px;"
+// 	>';
+// }
+
+/**
+ * JOD BUSINESS SERVICES - CUSTOM LOGO
+ */
 add_filter( 'astra_site_title', 'jod_business_custom_logo' );
 
 function jod_business_custom_logo( $site_title ) {
-
 	$logo_url = 'https://jodbs.com/blog/wp-content/uploads/2026/09/black-logo-1.webp';
-
 	return '<img
 		src="' . esc_url( $logo_url ) . '"
 		alt="JOD Business Services"

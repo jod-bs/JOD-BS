@@ -276,6 +276,17 @@ body.single-post .single-post-layout {
 ================================ */
 
 @media (max-width: 768px) {
+  body.single-post .site-content,
+  body.single-post .ast-container {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+  body.single-post .single-post-wrapper {
+    padding: 20px 12px !important;
+  }
+}
+
+/* @media (max-width: 768px) {
 
 	.single-post-wrapper {
 		padding: 30px 15px;
@@ -296,9 +307,9 @@ body.single-post .single-post-layout {
 
 	.single-post-sidebar {
 		width: 100%;
-	}
+	} 
 
-}
+}*/
 
 @media (max-width: 480px) {
 
