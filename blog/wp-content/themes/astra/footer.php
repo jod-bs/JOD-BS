@@ -102,9 +102,10 @@ astra_content_after();
 			<h3>CONTACT US</h3>
 
 			<p class="jod-contact-address">
-				Lakshmi Bhavan, Sundaram Avenue,<br>
-				Anna Salai, Chennai,<br>
-				Tamil Nadu 600006
+			3rd floor, Lakshmi Bhavan, 609, <br>
+			Sundaram Ave, Anna Salai, Thousand <br>
+			Lights, Chennai, Tamil Nadu 600006
+				
 			</p>
 
 			<a href="mailto:contact@jodbs.com">

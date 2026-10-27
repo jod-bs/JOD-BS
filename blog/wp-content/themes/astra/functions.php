@@ -273,3 +273,266 @@ function jod_business_custom_logo( $site_title ) {
 		style="width:150px; height:auto; max-width:250px;"
 	>';
 }
+
+/**
+ * Fix mobile hamburger menu.
+ *
+ * Live HTML was outputting a broken <header=""> without id="masthead" / class="site-header".
+ * Astra's frontend.js only toggles menus under "#masthead > #ast-mobile-header", so the
+ * hamburger click did nothing. Rebuild header attributes safely (no wp_kses_post on attrs).
+ */
+remove_action( 'astra_header', 'astra_header_markup' );
+add_action( 'astra_header', 'jod_astra_header_markup' );
+
+function jod_astra_header_markup() {
+	do_action( 'astra_header_markup_before' );
+
+	$attributes = apply_filters(
+		'astra_attr_header',
+		array(
+			'id'    => 'masthead',
+			'class' => implode( ' ', astra_get_header_classes() ),
+		),
+		'header',
+		array()
+	);
+
+	// Always keep the selectors Astra's mobile menu JS depends on.
+	$attributes['id'] = 'masthead';
+	if ( empty( $attributes['class'] ) ) {
+		$attributes['class'] = 'site-header';
+	} elseif ( false === strpos( $attributes['class'], 'site-header' ) ) {
+		$attributes['class'] = 'site-header ' . $attributes['class'];
+	}
+
+	echo '<header';
+	foreach ( $attributes as $key => $value ) {
+		if ( true === $value ) {
+			echo ' ' . esc_attr( $key );
+			continue;
+		}
+		if ( '' === $value || null === $value || false === $value ) {
+			continue;
+		}
+		echo ' ' . esc_attr( $key ) . '="' . esc_attr( $value ) . '"';
+	}
+	echo '>';
+
+	astra_masthead_top();
+	astra_masthead();
+	astra_masthead_bottom();
+
+	do_action( 'astra_sticky_header_markup' );
+	do_action( 'astra_bottom_header_after_markup' );
+
+	echo '</header><!-- #masthead -->';
+
+	do_action( 'astra_header_markup_after' );
+}
+
+/**
+ * Keep the mobile dropdown menu above blog cards / page content.
+ */
+add_action( 'wp_head', 'jod_mobile_menu_stacking_css', 99 );
+
+function jod_mobile_menu_stacking_css() {
+	?>
+	<style id="jod-mobile-menu-stacking">
+		#masthead.site-header,
+		#ast-mobile-header,
+		.ast-mobile-header-wrap,
+		.ast-header-break-point #ast-mobile-header .ast-main-header-wrap,
+		.ast-header-break-point #ast-mobile-header .main-header-bar-wrap {
+			position: relative;
+			z-index: 10000;
+			overflow: visible;
+		}
+
+		.ast-header-break-point #ast-mobile-header .ast-mobile-header-content,
+		.ast-header-break-point #ast-mobile-header .main-header-bar-navigation.toggle-on,
+		.ast-header-break-point.ast-main-header-nav-open #ast-mobile-header .ast-mobile-header-content {
+			position: relative;
+			z-index: 10001;
+			overflow: visible;
+			background: #ffffff;
+			box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+		}
+
+		.ast-header-break-point #ast-mobile-header .ast-mobile-header-content .main-header-bar-navigation,
+		.ast-header-break-point #ast-mobile-header .ast-mobile-header-content .main-navigation,
+		.ast-header-break-point #ast-mobile-header .ast-mobile-header-content .main-header-menu {
+			position: relative;
+			z-index: 10002;
+			background: #ffffff;
+		}
+
+		/* Prevent blog cards / content from covering the open mobile menu */
+		.ast-header-break-point #content,
+		.ast-header-break-point #content.site-content,
+		.ast-header-break-point #primary,
+		.ast-header-break-point .site-main,
+		.ast-header-break-point article,
+		.ast-header-break-point .ast-article-post {
+			position: relative;
+			z-index: 1;
+		}
+
+		body.ast-main-header-nav-open.ast-header-break-point #content {
+			pointer-events: none;
+		}
+
+		body.ast-main-header-nav-open.ast-header-break-point #ast-mobile-header,
+		body.ast-main-header-nav-open.ast-header-break-point #ast-mobile-header a.menu-link,
+		body.ast-main-header-nav-open.ast-header-break-point #ast-mobile-header .ast-menu-toggle,
+		body.ast-main-header-nav-open.ast-header-break-point #ast-mobile-header .main-header-menu-toggle {
+			pointer-events: auto;
+		}
+
+		.ast-header-break-point #ast-mobile-header .sub-menu {
+			background: #ffffff;
+		}
+	</style>
+	<?php
+}
+
+/**
+ * Reliable mobile menu: open/close, submenu expand, and real page navigation.
+ * Needed because broken <header> markup breaks Astra's built-in handlers.
+ */
+add_action( 'wp_footer', 'jod_mobile_menu_toggle_fallback', 99 );
+
+function jod_mobile_menu_toggle_fallback() {
+	?>
+	<script>
+	(function () {
+		function getMobileHeader() {
+			return document.getElementById('ast-mobile-header');
+		}
+
+		function isSafeUrl(href) {
+			if (!href) return false;
+			try {
+				var url = new URL(href, window.location.href);
+				return url.protocol === 'http:' || url.protocol === 'https:';
+			} catch (e) {
+				return false;
+			}
+		}
+
+		function isEmptyHash(href) {
+			if (!href) return true;
+			var trimmed = String(href).trim();
+			return trimmed === '' || trimmed === '#' || trimmed === '/#' || /#$/.test(trimmed);
+		}
+
+		function setMenuOpen(open) {
+			var mobileHeader = getMobileHeader();
+			if (!mobileHeader) return;
+			var btn = mobileHeader.querySelector('.main-header-menu-toggle');
+			var content = mobileHeader.querySelector('.ast-mobile-header-content');
+			var nav = mobileHeader.querySelector('.main-header-bar-navigation');
+
+			if (btn) {
+				btn.classList.toggle('toggled', open);
+				btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+			}
+			document.body.classList.toggle('ast-main-header-nav-open', open);
+			if (content) content.style.display = open ? 'block' : '';
+			if (nav) {
+				nav.classList.toggle('toggle-on', open);
+				nav.style.display = open ? 'block' : '';
+			}
+		}
+
+		function collapseSiblingSubmenus(item) {
+			var parentList = item.parentElement;
+			if (!parentList) return;
+			parentList.querySelectorAll(':scope > .menu-item-has-children').forEach(function (sibling) {
+				if (sibling === item) return;
+				sibling.classList.remove('ast-submenu-expanded');
+				var sub = sibling.querySelector(':scope > .sub-menu, :scope > .children');
+				if (sub) sub.style.display = 'none';
+				var toggle = sibling.querySelector(':scope > .ast-menu-toggle, :scope > .menu-link');
+				if (toggle) toggle.setAttribute('aria-expanded', 'false');
+			});
+		}
+
+		function toggleSubmenu(item) {
+			var sub = item.querySelector(':scope > .sub-menu, :scope > .children');
+			if (!sub) return;
+			var open = !item.classList.contains('ast-submenu-expanded');
+			collapseSiblingSubmenus(item);
+			item.classList.toggle('ast-submenu-expanded', open);
+			sub.style.display = open ? 'block' : 'none';
+			item.querySelectorAll(':scope > .ast-menu-toggle, :scope > .menu-link').forEach(function (el) {
+				el.setAttribute('aria-expanded', open ? 'true' : 'false');
+			});
+		}
+
+		// Repair missing masthead id/class so Astra selectors can still match.
+		document.addEventListener('DOMContentLoaded', function () {
+			var mobile = getMobileHeader();
+			var desktop = document.getElementById('ast-desktop-header');
+			var wrapper = document.getElementById('masthead');
+
+			if (!wrapper && (mobile || desktop)) {
+				wrapper = document.createElement('header');
+				wrapper.id = 'masthead';
+				wrapper.className = 'site-header';
+				var page = document.getElementById('page');
+				var first = desktop || mobile;
+				if (page && first && first.parentNode === page) {
+					page.insertBefore(wrapper, first);
+					if (desktop) wrapper.appendChild(desktop);
+					if (mobile) wrapper.appendChild(mobile);
+				}
+			} else if (wrapper) {
+				if (!wrapper.id) wrapper.id = 'masthead';
+				if (!wrapper.classList.contains('site-header')) wrapper.classList.add('site-header');
+			}
+		});
+
+		document.addEventListener('click', function (event) {
+			var mobileHeader = getMobileHeader();
+			if (!mobileHeader) return;
+
+			var toggleBtn = event.target.closest('.main-header-menu-toggle');
+			if (toggleBtn && mobileHeader.contains(toggleBtn)) {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				setMenuOpen(!toggleBtn.classList.contains('toggled'));
+				return;
+			}
+
+			var menuLink = event.target.closest('#ast-mobile-header a.menu-link');
+			var submenuToggle = event.target.closest('#ast-mobile-header .ast-menu-toggle');
+			if (!menuLink && !submenuToggle) return;
+			if (!mobileHeader.contains(menuLink || submenuToggle)) return;
+
+			var item = (menuLink || submenuToggle).closest('.menu-item');
+			if (!item) return;
+
+			// Submenu arrow / parent expand control.
+			if (submenuToggle || (menuLink && item.classList.contains('menu-item-has-children') && isEmptyHash(menuLink.getAttribute('href')))) {
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				toggleSubmenu(item);
+				return;
+			}
+
+			// Real destination links: navigate securely.
+			if (menuLink) {
+				var href = menuLink.getAttribute('href');
+				if (!isSafeUrl(href) || isEmptyHash(href)) {
+					event.preventDefault();
+					return;
+				}
+				event.preventDefault();
+				event.stopImmediatePropagation();
+				window.location.assign(new URL(href, window.location.href).href);
+			}
+		}, true);
+	})();
+	</script>
+	<?php
+}

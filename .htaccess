@@ -2,8 +2,16 @@
 # JOD Business Services (.htaccess) — Security Hardening & Canonical Routing
 # ==============================================================================
 
-# Disable directory browsing
-Options -Indexes
+# Disable directory browsing and content-negotiation surprises
+Options -Indexes -MultiViews
+
+# Reject /page.html/extra junk paths (forces a real 404 instead of PATH_INFO)
+<IfModule mod_rewrite.c>
+    AcceptPathInfo Off
+</IfModule>
+
+# Serve the branded 404 page with a real HTTP 404 status
+ErrorDocument 404 /404.html
 
 # ------------------------------------------------------------------------------
 # Block Direct Browser Access to Sensitive Files & System Artifacts
@@ -72,11 +80,11 @@ Options -Indexes
     RewriteCond %{HTTP_HOST} !^127\.0\.0\.1(?::\d+)?$ [NC]
     RewriteRule ^index\.html$ https://jodbs.com/ [R=301,L]
 
-    # Existing files and directories (including /blog/) serve normally
+    # Existing files and directories (including /blog/) serve normally.
+    # Missing paths fall through to ErrorDocument 404 /404.html above
+    # (real HTTP 404). Do not rewrite to 404.html with [L] alone — that
+    # would incorrectly return HTTP 200.
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
     RewriteRule ^ - [L]
-
-    # Non-existent paths -> Custom 404 page
-    RewriteRule ^ /404.html [L]
 </IfModule>
